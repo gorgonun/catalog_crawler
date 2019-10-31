@@ -1,6 +1,8 @@
 import java.time.LocalDate
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 
 import collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
@@ -16,7 +18,7 @@ object CatalogCrawler {
     def completeUrl: String = "https://classificados.inf.ufsc.br/" + link
 
     def completeInfo: CompleteInfo = {
-      val doc = Jsoup.connect(completeUrl).get()
+      val doc = page(completeUrl)
       val data = doc
         .selectFirst("table tr td form table tbody")
         .select("tbody tr")
@@ -69,17 +71,41 @@ object CatalogCrawler {
     LocalDate.of(l(2).split(" ").head.toInt, l(1).toInt, l.head.toInt)
   }
 
-  def main(args: Array[String]): Unit = {
-    val today = LocalDate.now()
-    val doc = Jsoup.connect(url + 0.toString).get()
+  def page(url: String, sleep: Int = 2000): Document = {
+    Thread.sleep(sleep)
+    println(s"Getting page $url")
+    Jsoup.connect(url).get()
+  }
 
-    val rows = doc
-      .select("table[class=box]")
-      .get(0)
-      .select("tr")
-      .iterator
-      .asScala
-      .map(rows => rows.select("td"))
+  def pagesToParse(url: String, date: LocalDate, sleep: Int, limit: Int = 5): Stream[Elements] = {
+    Stream.iterate(0)(_ + 15)
+      .map{
+        pageNumber =>
+          if (pageNumber > (limit - 1) * 5) throw new VerifyError("Page number was greater than the limit")
+          page(url + pageNumber.toString, sleep)
+            .selectFirst("table[class=box]")
+            .select("tr")
+      }
+      .takeWhile{
+        doc =>
+          parseDate(doc.get(1).select("td").get(2).text) isEqual date
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    require(args.length == 1, "Usage: CatalogCrawler category1,category2...,categoryN")
+    val sleep = 2000
+    val today = LocalDate.now()
+    val pages = pagesToParse(url, today, sleep)
+
+    val rows = pages
+        .flatMap{
+          page =>
+            page
+              .iterator
+              .asScala
+              .map(rows => rows.select("td"))
+        }
 
     val items = rows
       .map {
@@ -98,7 +124,7 @@ object CatalogCrawler {
       }
       .toList
 
-    println(items.head)
+    println(items)
 
 //    items.foreach(x => println(x.completeInfo))
 //    println(items.head.completeInfo)
