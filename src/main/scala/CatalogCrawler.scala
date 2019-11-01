@@ -6,6 +6,7 @@ import org.jsoup.select.Elements
 
 import collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
+import Email.sendEmail
 
 object CatalogCrawler {
 
@@ -92,6 +93,34 @@ object CatalogCrawler {
     }
   }
 
+  def sendNotification(items: List[Item], date: LocalDate): Unit = {
+
+    val subject = s"Novos achados ${date.toString}"
+    val message = items.map{item =>
+        s"""
+           |Categoria: ${item.category}
+           |Link: ${item.link}
+           |Informações:
+           |
+           |Descrição: ${item.completeInfo.get.description}
+           |
+           |Vendedor: ${item.completeInfo.get.seller}
+           |Email: ${item.completeInfo.get.email}
+           |Expiração: ${item.completeInfo.get.expiration}
+           |Cidade: ${item.completeInfo.get.city}
+           |Bairro: ${item.completeInfo.get.neighborhood}
+           |Rua: ${item.completeInfo.get.street}
+           |Preço: ${item.completeInfo.get.price}
+           |Contrato? ${item.completeInfo.get.contract}
+           |Lavanderia? ${item.completeInfo.get.laundry}
+           |Internet? ${item.completeInfo.get.internet}
+           |IPTU, Água, Luz incluso? ${item.completeInfo.get.basicExpenses}
+           |""".stripMargin
+    }.mkString("\n\n\n")
+    println(s"Sending email with ${items.length} finds")
+    sendEmail(subject, message)
+  }
+
   def main(args: Array[String]): Unit = {
     require(args.length == 1, "Usage: CatalogCrawler category1,category2...,categoryN")
     val sleep = 2000
@@ -133,10 +162,7 @@ object CatalogCrawler {
       .map(item => item.copy(completeInfo = Some(item.getCompleteInfo)))
       .filter(item => Filter.completeFilter(item, price, laundry, internet, basicExpenses))
 
-//    println(items)
-
-    items.foreach(x => println(x.completeInfo))
-//    println(items.head.completeInfo)
+    sendNotification(items, today)
   }
 
 }
