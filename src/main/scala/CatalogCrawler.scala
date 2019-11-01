@@ -94,8 +94,6 @@ object CatalogCrawler {
 
   def main(args: Array[String]): Unit = {
     require(args.length == 1, "Usage: CatalogCrawler category1,category2...,categoryN")
-    println(args.toList contains "a")
-    return
     val sleep = 2000
     val today = LocalDate.now()
     val pages = pagesToParse(url, today, sleep)
