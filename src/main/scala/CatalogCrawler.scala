@@ -13,11 +13,11 @@ object CatalogCrawler {
 
   case class CompleteInfo(description: String, seller: String, email: Option[String], expiration: LocalDate, postDate: LocalDate, price: Option[Int] = None, street: Option[String] = None, neighborhood: Option[String] = None, city: Option[String] = None, gender: Option[String] = None, contract: Option[Boolean] = None, basicExpenses: Option[Boolean] = None, laundry: Option[Boolean] = None, internet: Option[Boolean] = None, animals: Option[Boolean] = None)
 
-  case class Item(category: String, date: LocalDate, title: String, link: String, image: String) {
+  case class Item(category: String, date: LocalDate, title: String, link: String, image: String, completeInfo: Option[CompleteInfo] = None) {
 
     def completeUrl: String = "https://classificados.inf.ufsc.br/" + link
 
-    def completeInfo: CompleteInfo = {
+    def getCompleteInfo: CompleteInfo = {
       val doc = page(completeUrl)
       val data = doc
         .selectFirst("table tr td form table tbody")
@@ -81,7 +81,7 @@ object CatalogCrawler {
     Stream.iterate(0)(_ + 15)
       .map{
         pageNumber =>
-          if (pageNumber > (limit - 1) * 5) throw new VerifyError("Page number was greater than the limit")
+          if (pageNumber > (limit - 1) * 15) throw new VerifyError("Page number was greater than the limit")
           page(url + pageNumber.toString, sleep)
             .selectFirst("table[class=box]")
             .select("tr")
@@ -95,6 +95,12 @@ object CatalogCrawler {
   def main(args: Array[String]): Unit = {
     require(args.length == 1, "Usage: CatalogCrawler category1,category2...,categoryN")
     val sleep = 2000
+
+    val price = 600
+    val laundry = true
+    val internet = true
+    val basicExpenses = true
+
     val today = LocalDate.now()
     val pages = pagesToParse(url, today, sleep)
 
@@ -111,7 +117,7 @@ object CatalogCrawler {
       .map {
         items => Try(
           Item(
-            category = items.get(0).text,
+            category = items.get(0).text.replace(" ", "_").replace("/", "_").toLowerCase,
             title = items.get(1).text,
             link = items.get(1).select("a").first.attr("href"),
             date = parseDate(items.get(2).text),
@@ -123,10 +129,13 @@ object CatalogCrawler {
         case Failure(_) => None
       }
       .toList
+      .filter(item => Filter.itemFilter(item, args))
+      .map(item => item.copy(completeInfo = Some(item.getCompleteInfo)))
+      .filter(item => Filter.completeFilter(item, price, laundry, internet, basicExpenses))
 
-    println(items)
+//    println(items)
 
-//    items.foreach(x => println(x.completeInfo))
+    items.foreach(x => println(x.completeInfo))
 //    println(items.head.completeInfo)
   }
 
