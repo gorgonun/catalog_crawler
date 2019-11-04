@@ -94,9 +94,9 @@ object CatalogCrawler {
   }
 
   def sendNotification(items: List[Item], date: LocalDate): Unit = {
-
-    val subject = s"Novos achados ${date.toString}"
-    val message = items.map{item =>
+    if (items.nonEmpty) {
+      val subject = s"Novos achados ${date.toString}"
+      val message = items.map{item =>
         s"""
            |Categoria: ${item.category}
            |Link: ${item.link}
@@ -116,9 +116,10 @@ object CatalogCrawler {
            |Internet? ${item.completeInfo.get.internet}
            |IPTU, Água, Luz incluso? ${item.completeInfo.get.basicExpenses}
            |""".stripMargin
-    }.mkString("\n\n\n")
-    println(s"Sending email with ${items.length} finds")
-    sendEmail(subject, message)
+      }.mkString("\n\n\n")
+      println(s"Sending email with ${items.length} finds")
+      sendEmail(subject, message)
+    }
   }
 
   def main(args: Array[String]): Unit = {
