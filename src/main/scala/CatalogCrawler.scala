@@ -130,6 +130,7 @@ object CatalogCrawler {
     val laundry = true
     val internet = true
     val basicExpenses = true
+    val minimumScore = 1
 
     val today = LocalDate.now()
     val pages = pagesToParse(url, today, sleep)
@@ -161,7 +162,7 @@ object CatalogCrawler {
       .toList
       .filter(item => Filter.itemFilter(item, args))
       .map(item => item.copy(completeInfo = Some(item.getCompleteInfo)))
-      .filter(item => Filter.completeFilter(item, price, laundry, internet, basicExpenses))
+      .filter(item => Filter.completeFilter(item, minimumScore ,price, laundry, internet, basicExpenses))
 
     sendNotification(items, today)
   }
