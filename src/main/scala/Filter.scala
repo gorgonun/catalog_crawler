@@ -1,4 +1,4 @@
-import CatalogCrawler.Item
+import CatalogParser.Item
 
 object Filter {
 
