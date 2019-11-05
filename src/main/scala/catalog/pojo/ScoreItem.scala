@@ -1,6 +1,8 @@
 package catalog.pojo
 
 case class ScoreItem(
+                      minimumScore: Double,
+                      notificationEmails: Option[String],
                       categories: List[String],
                       email: Option[Boolean] = None,
                       price: Option[Int] = None,

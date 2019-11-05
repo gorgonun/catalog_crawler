@@ -20,9 +20,9 @@ object Filter {
     if (text.isDefined && text.get == item.getOrElse("")) 1.0 else 0.0
   }
 
-  def completeFilter(item: Item, minimumScore: Double, scoreItem: ScoreItem): Boolean = {
-    if (scoreItem.gender.isDefined && item.completeInfo.get.gender.getOrElse(-1) != scoreItem.gender.get) return false
-    if (!(scoreItem.categories contains item.category)) return false
+  def completeFilter(item: Item, minimumScore: Double, scoreItem: ScoreItem): Option[ScoreItem] = {
+    if (scoreItem.gender.isDefined && item.completeInfo.get.gender.getOrElse(-1) != scoreItem.gender.get) return None
+    if (!(scoreItem.categories contains item.category)) return None
 
     val boolSum = Seq(
       (item.completeInfo.get.email.isDefined, scoreItem.email.getOrElse(false)),
@@ -39,10 +39,13 @@ object Filter {
     )
       .map(x => str(x._1, x._2)).sum
     val average = (value(item.completeInfo.get.price.getOrElse(1), scoreItem.price) + boolSum + strSum) / 4
-    average >= minimumScore
+    if (average >= minimumScore) Some(scoreItem) else None
   }
 
-  def filterByScoreItems(item: Item, minimumScore: Double, scoreItems: List[ScoreItem]): Boolean = {
-    scoreItems.map(completeFilter(item, minimumScore, _)).reduce(_ || _)
+  def filterByScoreItems(item: Item, minimumScore: Double, scoreItems: List[ScoreItem]): List[(String, Item)] = {
+    scoreItems
+      .map(completeFilter(item, minimumScore, _))
+      .filter(_.isDefined)
+      .map(scoreItem => scoreItem.get.notificationEmails.getOrElse("") -> item)
   }
 }
