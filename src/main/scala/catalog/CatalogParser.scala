@@ -22,8 +22,8 @@ object CatalogParser {
 
   def parseGender(gender: Option[String]): Option[Int] = {
     gender match {
-      case Some(r) if (r == "Feminino") => Some(0)
-      case Some(r) if (r == "Masculino") => Some(1)
+      case Some(r) if r == "Feminino" => Some(0)
+      case Some(r) if r == "Masculino" => Some(1)
       case _ => None
     }
   }
@@ -79,32 +79,34 @@ object CatalogParser {
     )
   }
 
-  def sendNotification(items: List[Item], date: LocalDate): Unit = {
-    if (items.nonEmpty) {
+  def sendNotification(filteredItemsWithEmail: Map[String, List[Item]], date: LocalDate): Unit = {
+    if (filteredItemsWithEmail.nonEmpty) {
       val subject = s"Novos achados ${date.toString}"
-      val message = items.map{item =>
-        s"""
-           |Categoria: ${item.category}
-           |Link: ${item.completeUrl}
-           |Informações:
-           |
-           |Descrição: ${item.completeInfo.get.description}
-           |
-           |Vendedor: ${item.completeInfo.get.seller}
-           |Email: ${item.completeInfo.get.email}
-           |Expiração: ${item.completeInfo.get.expiration}
-           |Cidade: ${item.completeInfo.get.city.getOrElse("Não informado")}
-           |Bairro: ${item.completeInfo.get.neighborhood.getOrElse("Não informado")}
-           |Rua: ${item.completeInfo.get.street.getOrElse("Não informado")}
-           |Preço: ${item.completeInfo.get.price.getOrElse("Não informado")}
-           |Contrato? ${optionToWord(item.completeInfo.get.contract)}
-           |Lavanderia? ${optionToWord(item.completeInfo.get.laundry)}
-           |Internet? ${optionToWord(item.completeInfo.get.internet)}
-           |IPTU, Água, Luz incluso? ${optionToWord(item.completeInfo.get.basicExpenses)}
-           |""".stripMargin
-      }.mkString("\n\n\n")
-      logger.info(s"Sending email with ${items.length} finds")
-      sendEmail(subject, message)
+      filteredItemsWithEmail.foreach{itemWithEmail =>
+        val message = itemWithEmail._2.map{ item =>
+          s"""
+             |Categoria: ${item.category}
+             |Link: ${item.completeUrl}
+             |Informações:
+             |
+             |Descrição: ${item.completeInfo.get.description}
+             |
+             |Vendedor: ${item.completeInfo.get.seller}
+             |Email: ${item.completeInfo.get.email}
+             |Expiração: ${item.completeInfo.get.expiration}
+             |Cidade: ${item.completeInfo.get.city.getOrElse("Não informado")}
+             |Bairro: ${item.completeInfo.get.neighborhood.getOrElse("Não informado")}
+             |Rua: ${item.completeInfo.get.street.getOrElse("Não informado")}
+             |Preço: ${item.completeInfo.get.price.getOrElse("Não informado")}
+             |Contrato? ${optionToWord(item.completeInfo.get.contract)}
+             |Lavanderia? ${optionToWord(item.completeInfo.get.laundry)}
+             |Internet? ${optionToWord(item.completeInfo.get.internet)}
+             |IPTU, Água, Luz incluso? ${optionToWord(item.completeInfo.get.basicExpenses)}
+             |""".stripMargin
+        }.mkString("\n\n\n")
+        logger.info(s"Sending email with ${itemWithEmail._2.length} finds")
+        sendEmail(subject, message, itemWithEmail._1.split(",").toList)
+      }
     }
   }
 }

@@ -26,7 +26,9 @@ object CatalogCrawler {
       .toList
       .filter(Filter.itemFilter(_, filters.flatMap(_.categories)))
       .map(item => item.copy(completeInfo = Some(item.getCompleteInfo)))
-      .filter(Filter.filterByScoreItems(_, minimumScore, filters))
+      .flatMap(Filter.filterByScoreItems(_, minimumScore, filters))
+      .groupBy(_._1)
+      .mapValues(_.map(_._2))
 
     sendNotification(items, today)
 
