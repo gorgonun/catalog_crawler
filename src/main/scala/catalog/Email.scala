@@ -1,11 +1,9 @@
+package catalog
+
 import java.util.Properties
 
-import javax.mail.{Authenticator, PasswordAuthentication}
-import javax.mail.Message
-import javax.mail.Session
-import javax.mail.Transport
-import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
+import javax.mail._
+import javax.mail.internet.{InternetAddress, MimeMessage}
 
 object Email {
 
