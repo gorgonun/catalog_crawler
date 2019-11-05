@@ -3,7 +3,7 @@ package catalog
 import java.time.LocalDate
 
 import catalog.CatalogParser.{logger, pagesToParse, parse, sendNotification}
-import Filters.filters
+import catalog.Filters.filters
 
 import scala.collection.JavaConverters._
 

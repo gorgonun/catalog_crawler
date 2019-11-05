@@ -2,7 +2,7 @@ package catalog.pojo
 
 import java.time.LocalDate
 
-import catalog.CatalogParser.{page, parseDate, parseGender, normalize}
+import catalog.CatalogParser.{normalize, page, parseDate, parseGender}
 
 import scala.collection.JavaConverters._
 
