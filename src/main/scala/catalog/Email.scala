@@ -2,10 +2,9 @@ package catalog
 
 import java.util.Properties
 
+import catalog.CatalogParser.logger
 import javax.mail._
 import javax.mail.internet.{InternetAddress, MimeMessage}
-
-import catalog.CatalogParser.logger
 
 import scala.util.Try
 
