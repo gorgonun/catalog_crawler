@@ -9,8 +9,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.5.26",
   "com.sun.mail" % "jakarta.mail" % "1.6.4",
 
-  "ch.qos.logback"  %  "logback-classic"    % "1.2.3"
-)
+  "ch.qos.logback"  %  "logback-classic"    % "1.2.3",
+
+  "org.apache.spark" %% "spark-core" % "2.4.4",
+  "org.apache.spark" %% "spark-sql" % "2.4.4",
+  "org.postgresql" % "postgresql" % "42.2.1"
+ )
 enablePlugins(JavaAppPackaging)
 
 herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value)
