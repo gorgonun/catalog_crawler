@@ -1,16 +1,16 @@
 package catalog.pojos
 
-import java.time.LocalDate
+import java.sql.Timestamp
 
 case class CompleteItem(category: String,
-                        date: LocalDate,
+                        date: Timestamp,
                         title: String,
                         link: String,
                         image: String,
-                        description: String,
-                        seller: String,
-                        expiration: LocalDate,
-                        postDate: LocalDate,
+                        description: Option[String] = None,
+                        seller: Option[String] = None,
+                        expiration: Option[Timestamp] = None,
+                        postDate: Option[Timestamp] = None,
                         email: Option[String] = None,
                         price: Option[Int] = None,
                         street: Option[String] = None,

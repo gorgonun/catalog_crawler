@@ -1,10 +1,11 @@
 package catalog.parsers
 
-import java.time.LocalDate
+import java.sql.Timestamp
 import java.util.Properties
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.functions._
+import catalog.pojos.{CompleteItem, RawItem}
+import org.apache.spark.sql.{DataFrame, Encoder, Encoders, SaveMode, SparkSession}
+import catalog.utils.Utils.{normalize, parseDate}
 
 object UFSCParser {
 
@@ -16,26 +17,49 @@ object UFSCParser {
 
     import spark.implicits._
 
-    val dbUrl = "jdbc:" + sys.env("DATABASE_URI")
+    val dbUrl = "jdbc:" + sys.env("DATABASE_URL")
     val connectionProperties = new Properties()
     connectionProperties.setProperty("Driver", "org.postgresql.Driver")
 
-    val table = spark.read.jdbc(dbUrl, "rawitems", connectionProperties)
+    val rawItems = spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
 
-    val emailUDF = udf(parseEmail _)
-    val
-    table.withColumn("email", emailUDF(table("email")))
+    val completeItems = rawItems.map {
+      rawItem =>
+        CompleteItem(
+          category = normalize(rawItem.category),
+          date = Timestamp.valueOf(parseDate(rawItem.date).atStartOfDay()),
+          title = normalize(rawItem.title),
+          image = rawItem.image,
+          link = rawItem.link,
+          description = rawItem.description,
+          seller = rawItem.seller,
+          expiration = rawItem.expiration.map(r =>  Timestamp.valueOf(parseDate(r).atStartOfDay())),
+          postDate = rawItem.postDate.map(r =>  Timestamp.valueOf(parseDate(r).atStartOfDay())),
+          email = rawItem.email.flatMap(parseEmail),
+          price = rawItem.price.flatMap(parsePrice),
+          street = rawItem.street,
+          neighborhood = rawItem.neighborhood,
+          city = rawItem.city,
+          gender = rawItem.gender.flatMap(parseGender),
+          contract = rawItem.contract.flatMap(textToBoolean),
+          basicExpenses = rawItem.basicExpenses.flatMap(textToBoolean),
+          laundry = rawItem.laundry.flatMap(textToBoolean),
+          internet = rawItem.internet.flatMap(textToBoolean),
+          animals = rawItem.animals.flatMap(textToBoolean)
+        )
+    }
 
+    completeItems.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "completeitems", connectionProperties = connectionProperties)
   }
 
-    def textToBoolean(text: Option[String]): Option[Boolean] =
-    text match {
-      case Some(text) if (text.toLowerCase == "sim") => Some(true)
+    def textToBoolean(text: String): Option[Boolean] =
+    normalize(text).toLowerCase match {
+      case "sim" => Some(true)
       case _ => Some(false)
     }
 
-  def parsePrice(price: Option[String]): Option[Int] = {
-    val noDecimal = price.getOrElse("").split(",").head
+  def parsePrice(price: String): Option[Int] = {
+    val noDecimal = price.split(",").head
     "[\\d.]+".r findFirstMatchIn noDecimal match {
       case Some(r) => Some(r.toString.replace(".", "").toInt)
       case _ => None
@@ -49,57 +73,11 @@ object UFSCParser {
     }
   }
 
-  def parseDate(df: DataFrame): DataFrame = {
-    df.withColumn("date", col("date").cast("timestamp"))
-  }
-
-  def parseGender(gender: Option[String]): Option[String] = {
+  def parseGender(gender: String): Option[String] = {
     gender match {
-      case Some(r) if r == "Feminino" => Some("F")
-      case Some(r) if r == "Masculino" => Some("M")
+      case "Feminino" => Some("F")
+      case "Masculino" => Some("M")
       case _ => None
     }
   }
-
-
-//  def optionToWord(option: Option[Boolean]): String =
-//    option match {
-//      case Some(r) if r => "Sim"
-//      case Some(r) if !r => "Não"
-//      case _ => "Não informado"
-//    }
-
-
-
-
-//  def sendNotification(filteredItemsWithEmail: Map[String, List[RawItem]], date: LocalDate): Unit = {
-//    if (filteredItemsWithEmail.nonEmpty) {
-//      val subject = s"Novos achados ${date.toString}"
-//      filteredItemsWithEmail.foreach{itemWithEmail =>
-//        val message = itemWithEmail._2.map{ item =>
-//          s"""
-//             |Categoria: ${item.category}
-//             |Link: ${item.completeUrl}
-//             |Informações:
-//             |
-//             |Descrição: ${item.completeInfo.get.description}
-//             |
-//             |Vendedor: ${item.completeInfo.get.seller}
-//             |Email: ${item.completeInfo.get.email}
-//             |Expiração: ${item.completeInfo.get.expiration}
-//             |Cidade: ${item.completeInfo.get.city.getOrElse("Não informado")}
-//             |Bairro: ${item.completeInfo.get.neighborhood.getOrElse("Não informado")}
-//             |Rua: ${item.completeInfo.get.street.getOrElse("Não informado")}
-//             |Preço: ${item.completeInfo.get.price.getOrElse("Não informado")}
-//             |Contrato? ${optionToWord(item.completeInfo.get.contract)}
-//             |Lavanderia? ${optionToWord(item.completeInfo.get.laundry)}
-//             |Internet? ${optionToWord(item.completeInfo.get.internet)}
-//             |IPTU, Água, Luz incluso? ${optionToWord(item.completeInfo.get.basicExpenses)}
-//             |""".stripMargin
-//        }.mkString("\n\n\n")
-//        logger.info(s"Sending email with ${itemWithEmail._2.length} finds")
-//        sendEmail(subject, message, itemWithEmail._1.split(",").toList)
-//      }
-//    }
-//  }
 }

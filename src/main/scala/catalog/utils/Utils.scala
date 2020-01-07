@@ -1,5 +1,7 @@
 package catalog.utils
 
+import java.time.LocalDate
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.{Logger, LoggerFactory}
@@ -23,5 +25,10 @@ object Utils {
       .replace(".", "")
       .replace(":", "")
       .toLowerCase
+  }
+
+  def parseDate(date: String): LocalDate = {
+    val dateAsText = date.split("/")
+    LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
   }
 }

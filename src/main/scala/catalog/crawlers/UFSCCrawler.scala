@@ -33,9 +33,7 @@ object UFSCCrawler {
     val pages = pagesToParse(url, today, sleep)
 
     val rows = pages.flatMap(_.iterator.asScala.map(_.select("td"))).filter(_.size >= 4)
-    val items = spark.createDataset(rows.map(parse).flatMap(_.toOption))
-    val infos = items.map(item => getCompleteInfo(item.link))
-    val table = items.join(infos, Seq("link"))
+    val table = spark.createDataset(rows.map(parse).flatMap(_.toOption).map(getCompleteInfo))
 
     table.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "rawitems", connectionProperties = connectionProperties)
 
@@ -72,8 +70,8 @@ object UFSCCrawler {
     )
   }
 
-  def getCompleteInfo(link: String): RawInfo = {
-    val doc = page(link)
+  def getCompleteInfo(incompleteRawItem: RawItem): RawItem = {
+    val doc = page(incompleteRawItem.link)
     val data = doc
       .selectFirst("table tr td form table tbody")
       .select("tbody tr")
@@ -85,13 +83,12 @@ object UFSCCrawler {
       .map(x => (normalize(x.head.text), x(1).text))
       .toMap
 
-    RawInfo(
-      link = link,
-      description = description,
-      seller = mp("vendido_por"),
+    incompleteRawItem.copy(
+      description = Option(description),
+      seller = mp.get("vendido_por"),
       email = mp.get("email"),
-      expiration = mp("anúncio_expira"),
-      postDate = mp("adicionado"),
+      expiration = mp.get("anúncio_expira"),
+      postDate = mp.get("adicionado"),
       city = mp.get("cidade"),
       neighborhood = mp.get("bairro"),
       street = mp.get("logradouro_nº"),

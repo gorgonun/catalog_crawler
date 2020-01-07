@@ -1,3 +1,22 @@
 package catalog.pojos
 
-case class RawItem(category: String, date: String, title: String, image: String, link: String)
+case class RawItem(category: String,
+                   date: String,
+                   title: String,
+                   image: String,
+                   link: String,
+                   description: Option[String] = None,
+                   seller: Option[String] = None,
+                   expiration: Option[String] = None,
+                   postDate: Option[String] = None,
+                   email: Option[String] = None,
+                   price: Option[String] = None,
+                   street: Option[String] = None,
+                   neighborhood: Option[String] = None,
+                   city: Option[String] = None,
+                   gender: Option[String] = None,
+                   contract: Option[String] = None,
+                   basicExpenses: Option[String] = None,
+                   laundry: Option[String] = None,
+                   internet: Option[String] = None,
+                   animals: Option[String] = None)
