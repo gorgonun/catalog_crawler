@@ -1,6 +1,7 @@
 package catalog.parsers
 
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.util.Properties
 
 import catalog.pojos.{CompleteItem, RawItem}
@@ -27,14 +28,14 @@ object UFSCParser {
       rawItem =>
         CompleteItem(
           category = normalize(rawItem.category),
-          date = Timestamp.valueOf(parseDate(rawItem.date).atStartOfDay()),
+          date = localDateAsTimestamp(parseDate(rawItem.date).get),
           title = normalize(rawItem.title),
           image = rawItem.image,
           link = rawItem.link,
           description = rawItem.description,
           seller = rawItem.seller,
-          expiration = rawItem.expiration.map(r =>  Timestamp.valueOf(parseDate(r).atStartOfDay())),
-          postDate = rawItem.postDate.map(r =>  Timestamp.valueOf(parseDate(r).atStartOfDay())),
+          expiration = rawItem.expiration.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
+          postDate = rawItem.postDate.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
           email = rawItem.email.flatMap(parseEmail),
           price = rawItem.price.flatMap(parsePrice),
           street = rawItem.street,
@@ -79,5 +80,9 @@ object UFSCParser {
       case "Masculino" => Some("M")
       case _ => None
     }
+  }
+
+  def localDateAsTimestamp(date: LocalDate): Timestamp = {
+    Timestamp.valueOf(date.atStartOfDay)
   }
 }
