@@ -33,7 +33,7 @@ object UFSCCrawler extends Crawler {
     val today = LocalDate.now()
     val totalPages = getPagesNumber(15)
       .map(pageNumber => getBodyElements(page(url + pageNumber.toString, sleep)))
-      .takeWhile(page => filterPageByDate(page, today))
+      .takeWhile(page => pageDateIsGreaterOrEqual(page, today))
 
     val rows = totalPages.flatMap(_.iterator.asScala.map(_.select("td"))).filter(_.size >= 4)
     val table = spark.createDataset(rows.map(parse).flatMap(_.toOption).map(getCompleteInfo))
@@ -54,12 +54,14 @@ object UFSCCrawler extends Crawler {
 
   def getBodyElements(completePage: Document): Elements = completePage.selectFirst("table[class=box]").select("tr")
 
-  def filterPageByDate(page: Elements, date: LocalDate): Boolean = {
+  def pageDateIsGreaterOrEqual(page: Elements, date: LocalDate): Boolean = {
     val dateAsText = page.get(1).select("td").get(2).text.split("/")
     val pageDate = LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
 
     (pageDate isAfter date) || (pageDate isEqual date)
   }
+
+  def getTableRows(page: Elements) = page.iterator.asScala.map(_.select("td"))
 
   def parse(items: Elements): Try[RawItem] = {
     println(items)
