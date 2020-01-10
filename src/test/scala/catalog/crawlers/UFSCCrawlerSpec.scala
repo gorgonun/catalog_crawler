@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.io.Source
+import scala.util.Success
 
 class UFSCCrawlerSpec extends FunSpec with Matchers{
 //  val mockedCrawler = new UFSCCrawler with Crawler {
@@ -73,16 +74,46 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
 
   it("should parse a valid raw item") {
     val rawFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/raw_item.html")
-    val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr")
+    val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
 
-    val expected = RawItem(
-      link = "",
-      category = "",
-      date = "",
-      title = "",
-      image = ""
-    )
+    val expected = Success(RawItem(
+      "ofertas_de_quartos_vagas_centro",
+      "08/01/2020",
+      "Alugo quarto em apartamento no Centro, com óti...",
+      "layout_images/new/noimg.gif",
+      "https://classificados.inf.ufsc.br/detail.php?id=184761"))
 
     UFSCCrawler.parse(rawItem) shouldBe expected
+  }
+
+  it("should fail if a necessary field is not found") {
+    val rawFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/raw_item.html")
+    val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
+    rawItem.get(0).text("")
+
+    UFSCCrawler.parse(rawItem).isFailure shouldBe true
+  }
+
+  it("should complete rawitem with the complete info") {
+    val infoFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/complete_info_page.html")
+    val infoPage = Jsoup.parse(infoFile.getLines.mkString)
+    val rawFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/raw_item.html")
+    val rawItem = UFSCCrawler.parse(Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td"))
+
+    infoFile.close()
+    rawFile.close()
+
+    val expected = Success(RawItem(
+      "ofertas_de_quartos_vagas_centro",
+      "08/01/2020",
+      "Alugo quarto em apartamento no Centro, com óti...",
+      "layout_images/new/noimg.gif",
+      "https://classificados.inf.ufsc.br/detail.php?id=184761"))
+
+    UFSCCrawler.getCompleteInfo(infoPage, rawItem.get) shouldBe expected
+  }
+
+  it("should fail rawitem with the complete info") {
+
   }
 }

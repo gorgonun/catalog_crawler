@@ -36,4 +36,6 @@ object Utils {
       LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
     }
   }
+
+  def failIfEmpty(text: String): String = if (text.isEmpty) throw new VerifyError("Text is empty") else text
 }

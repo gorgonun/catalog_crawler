@@ -10,7 +10,7 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 
 import scala.collection.JavaConverters._
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object UFSCCrawler extends Crawler {
 
@@ -35,8 +35,15 @@ object UFSCCrawler extends Crawler {
       .map(pageNumber => getBodyElements(page(url + pageNumber.toString, sleep)))
       .takeWhile(page => pageDateIsGreaterOrEqual(page, today))
 
-    val rows = totalPages.flatMap(_.iterator.asScala.map(_.select("td"))).filter(_.size >= 4)
-    val table = spark.createDataset(rows.map(parse).flatMap(_.toOption).map(getCompleteInfo))
+    val rows = totalPages
+      .flatMap{
+        _.iterator.asScala.map(_.select("td"))}
+      .filter(_.size >= 4)
+
+    val table = spark
+      .createDataset(rows.map(parse)
+        .flatMap(_.toOption)
+        .map(ri => getCompleteInfo(page(ri.link), ri)))
 
     table.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "rawitems", connectionProperties = connectionProperties)
 
@@ -64,9 +71,8 @@ object UFSCCrawler extends Crawler {
   def getTableRows(page: Elements) = page.iterator.asScala.map(_.select("td"))
 
   def parse(items: Elements): Try[RawItem] = {
-    println(items)
     val link = "https://classificados.inf.ufsc.br/" + items.get(1).selectFirst("a").attr("href")
-    Try(
+    val temp = Try(
       RawItem(
         category = normalize(items.get(0).text),
         title = items.get(1).text,
@@ -74,10 +80,11 @@ object UFSCCrawler extends Crawler {
         date = items.get(2).text,
         image = items.get(3).selectFirst("img").attr("src"))
     )
+
+    temp.map(ri => if(ri.category.isEmpty || ri.title.isEmpty || ri.link.isEmpty || ri.date.isEmpty || ri.image.isEmpty) throw new Exception("") else ri)
   }
 
-  def getCompleteInfo(incompleteRawItem: RawItem): RawItem = {
-    val doc = page(incompleteRawItem.link)
+  def getCompleteInfo(doc: Document, incompleteRawItem: RawItem): RawItem = {
     val data = doc
       .selectFirst("table tr td form table tbody")
       .select("tbody tr")
