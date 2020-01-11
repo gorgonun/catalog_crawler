@@ -2,7 +2,6 @@ package catalog.crawlers
 
 import java.time.LocalDate
 
-import catalog.crawlers.UFSCCrawler
 import catalog.pojos.RawItem
 import org.jsoup.Jsoup
 import org.scalatest.{FunSpec, Matchers}
@@ -10,7 +9,7 @@ import org.scalatest.{FunSpec, Matchers}
 import scala.io.Source
 import scala.util.Success
 
-class UFSCCrawlerSpec extends FunSpec with Matchers{
+class UFSCCrawlerSpec extends FunSpec with Matchers {
 
   it("should retrieve a stream of numbers respecting the step") {
     val result = UFSCCrawler.getPagesNumber(15)
@@ -23,9 +22,9 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
   }
 
   it("should get the relevant table rows") {
-    val expectedFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/table_rows.html")
+    val expectedFile = Source.fromResource("UFSCCrawlerSpec/table_rows.html")
     val expected = Jsoup.parse(expectedFile.getLines.mkString).selectFirst("table").select("tr")
-    val resultFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/complete_page.html")
+    val resultFile = Source.fromResource("UFSCCrawlerSpec/complete_page.html")
     val result = UFSCCrawler.getBodyElements(Jsoup.parse(resultFile.getLines.mkString))
     expectedFile.close()
     resultFile.close()
@@ -34,7 +33,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
   }
 
   it("should return true when date is greater or equals today") {
-    val pageFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/complete_page.html")
+    val pageFile = Source.fromResource("UFSCCrawlerSpec/complete_page.html")
     val page = UFSCCrawler.getBodyElements(Jsoup.parse(pageFile.getLines.mkString))
     val today = LocalDate.now()
     val tomorrow = today.plusDays(1)
@@ -49,7 +48,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
   }
 
   it("should return false when date is lower than today") {
-    val pageFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/complete_page.html")
+    val pageFile = Source.fromResource("UFSCCrawlerSpec/complete_page.html")
     val page = UFSCCrawler.getBodyElements(Jsoup.parse(pageFile.getLines.mkString))
     val today = LocalDate.now()
     val yesterday = today.minusDays(1)
@@ -61,7 +60,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
   }
 
   it("should parse a valid raw item") {
-    val rawFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/raw_item.html")
+    val rawFile = Source.fromResource("UFSCCrawlerSpec/raw_item.html")
     val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
 
     val expected = Success(RawItem(
@@ -75,7 +74,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
   }
 
   it("should fail if a necessary field is not found") {
-    val rawFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/raw_item.html")
+    val rawFile = Source.fromResource("UFSCCrawlerSpec/raw_item.html")
     val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
     rawItem.get(0).text("")
 
@@ -83,9 +82,9 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
   }
 
   it("should complete rawitem with the complete info") {
-    val infoFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/complete_info_page.html")
+    val infoFile = Source.fromResource("UFSCCrawlerSpec/complete_info_page.html")
     val infoPage = Jsoup.parse(infoFile.getLines.mkString)
-    val rawFile = Source.fromResource("catalog/crawlers/UFSCCrawlerSpec/raw_item.html")
+    val rawFile = Source.fromResource("UFSCCrawlerSpec/raw_item.html")
     val rawItem = UFSCCrawler.parse(Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td"))
 
     infoFile.close()
