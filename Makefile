@@ -6,4 +6,5 @@ run:
 	- sbt run
 
 deploy:
-	- sbt assembly deployHeroku
+	- sbt assembly
+	- docker build -t catalog ./ --build-arg DATABASE_URL=$$DATABASE_URL

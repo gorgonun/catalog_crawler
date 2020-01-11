@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.util.Properties
 
 import catalog.pojos._
+import catalog.setups.CrawlerSetup.logger
 import catalog.utils.Utils.normalize
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.jsoup.nodes.Document
@@ -14,7 +15,9 @@ import scala.util.Try
 
 object UFSCCrawler extends Crawler {
 
-  def main(args: Array[String]): Unit = {
+  def start(): Unit = {
+    logger.info("Starting ufsc crawler")
+
     val spark = SparkSession
       .builder()
       .master("local")
@@ -23,7 +26,7 @@ object UFSCCrawler extends Crawler {
     import spark.implicits._
 
     val url = "https://classificados.inf.ufsc.br/latestads.php?offset="
-    val dbUrl = "jdbc:" + sys.env("DATABASE_URI")
+    val dbUrl = "jdbc:" + sys.env("DATABASE_URL")
 
     val connectionProperties = new Properties()
     connectionProperties.setProperty("Driver", "org.postgresql.Driver")
@@ -47,7 +50,7 @@ object UFSCCrawler extends Crawler {
 
     table.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "rawitems", connectionProperties = connectionProperties)
 
-    logger.info("Success")
+    logger.info("Finished ufsc crawler")
   }
 
   def getPagesNumber(step: Int, limit: Int = 5): Stream[Int] = {

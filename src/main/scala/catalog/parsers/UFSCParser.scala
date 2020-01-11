@@ -13,7 +13,8 @@ import scala.util.Try
 
 object UFSCParser extends Commom {
 
-  def main(args: Array[String]): Unit = {
+  def start(): Unit = {
+    logger.info("Starting ufsc parser")
     val spark = SparkSession
       .builder()
       .master("local")
@@ -29,6 +30,8 @@ object UFSCParser extends Commom {
     val completeItems = rawItems.map(parse)
 
     completeItems.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "completeitems", connectionProperties = connectionProperties)
+
+    logger.info("Finished ufsc parser")
   }
 
   def parse(rawItem: RawItem): CompleteItem = {
