@@ -1,10 +1,10 @@
 package catalog.crawlers
 
-import catalog.utils.Utils.logger
+import catalog.utils.Commom
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-trait Crawler {
+trait Crawler extends Commom {
 
   def page(url: String, sleep: Int = 2000): Document = {
     Thread.sleep(sleep)

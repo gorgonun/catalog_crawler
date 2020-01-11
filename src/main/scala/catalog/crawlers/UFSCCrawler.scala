@@ -4,13 +4,13 @@ import java.time.LocalDate
 import java.util.Properties
 
 import catalog.pojos._
-import catalog.utils.Utils.{logger, normalize}
 import org.apache.spark.sql.{SaveMode, SparkSession}
-import org.jsoup.nodes.{Document, Element}
+import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import catalog.utils.Utils.normalize
 
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 object UFSCCrawler extends Crawler {
 
@@ -68,7 +68,7 @@ object UFSCCrawler extends Crawler {
     (pageDate isAfter date) || (pageDate isEqual date)
   }
 
-  def getTableRows(page: Elements) = page.iterator.asScala.map(_.select("td"))
+  def getTableRows(page: Elements): Iterator[Elements] = page.iterator.asScala.map(_.select("td"))
 
   def parse(items: Elements): Try[RawItem] = {
     val link = "https://classificados.inf.ufsc.br/" + items.get(1).selectFirst("a").attr("href")

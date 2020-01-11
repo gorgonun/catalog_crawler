@@ -1,28 +1,16 @@
 package catalog.crawlers
 
-import java.lang.VerifyError
 import java.time.LocalDate
 
+import catalog.crawlers.UFSCCrawler
 import catalog.pojos.RawItem
-import catalog.utils.Utils.logger
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.io.Source
 import scala.util.Success
 
 class UFSCCrawlerSpec extends FunSpec with Matchers{
-//  val mockedCrawler = new UFSCCrawler with Crawler {
-//    override def page(url: String, sleep: Int): Document = {
-//      Thread.sleep(sleep)
-//      logger.info(s"Getting local file $url")
-//      val input = Source.fromFile(url)
-//      val parsedPage = Jsoup.parse(input.getLines.mkString)
-//      input.close()
-//      parsedPage
-//    }
-//  }
 
   it("should retrieve a stream of numbers respecting the step") {
     val result = UFSCCrawler.getPagesNumber(15)
@@ -103,17 +91,23 @@ class UFSCCrawlerSpec extends FunSpec with Matchers{
     infoFile.close()
     rawFile.close()
 
-    val expected = Success(RawItem(
+    val expected = RawItem(
       "ofertas_de_quartos_vagas_centro",
       "08/01/2020",
       "Alugo quarto em apartamento no Centro, com óti...",
       "layout_images/new/noimg.gif",
-      "https://classificados.inf.ufsc.br/detail.php?id=184761"))
+      "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
+      Some("Isabela Amorim de Oliveira"),
+      Some("23/01/2020 (em 13 dias)"),
+      Some("08/01/2020"),
+      Some("Contatar Vendedor"),
+      Some("790"),
+      Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
+      Some("Centro"),
+      Some("Florianópolis"),
+      Some("Feminino"))
 
     UFSCCrawler.getCompleteInfo(infoPage, rawItem.get) shouldBe expected
-  }
-
-  it("should fail rawitem with the complete info") {
-
   }
 }

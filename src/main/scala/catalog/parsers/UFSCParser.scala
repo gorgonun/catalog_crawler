@@ -5,10 +5,13 @@ import java.time.LocalDate
 import java.util.Properties
 
 import catalog.pojos.{CompleteItem, RawItem}
-import org.apache.spark.sql.{DataFrame, Encoder, Encoders, SaveMode, SparkSession}
-import catalog.utils.Utils.{normalize, parseDate}
+import catalog.utils.Commom
+import catalog.utils.Utils.normalize
+import org.apache.spark.sql.{SaveMode, SparkSession}
 
-object UFSCParser {
+import scala.util.Try
+
+object UFSCParser extends Commom {
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession
@@ -23,34 +26,34 @@ object UFSCParser {
     connectionProperties.setProperty("Driver", "org.postgresql.Driver")
 
     val rawItems = spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
-
-    val completeItems = rawItems.map {
-      rawItem =>
-        CompleteItem(
-          category = normalize(rawItem.category),
-          date = localDateAsTimestamp(parseDate(rawItem.date).get),
-          title = normalize(rawItem.title),
-          image = rawItem.image,
-          link = rawItem.link,
-          description = rawItem.description,
-          seller = rawItem.seller,
-          expiration = rawItem.expiration.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
-          postDate = rawItem.postDate.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
-          email = rawItem.email.flatMap(parseEmail),
-          price = rawItem.price.flatMap(parsePrice),
-          street = rawItem.street,
-          neighborhood = rawItem.neighborhood,
-          city = rawItem.city,
-          gender = rawItem.gender.flatMap(parseGender),
-          contract = rawItem.contract.flatMap(textToBoolean),
-          basicExpenses = rawItem.basicExpenses.flatMap(textToBoolean),
-          laundry = rawItem.laundry.flatMap(textToBoolean),
-          internet = rawItem.internet.flatMap(textToBoolean),
-          animals = rawItem.animals.flatMap(textToBoolean)
-        )
-    }
+    val completeItems = rawItems.map(parse)
 
     completeItems.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "completeitems", connectionProperties = connectionProperties)
+  }
+
+  def parse(rawItem: RawItem): CompleteItem = {
+    CompleteItem(
+      category = normalize(rawItem.category),
+      date = localDateAsTimestamp(parseDate(rawItem.date).get),
+      title = normalize(rawItem.title),
+      image = rawItem.image,
+      link = rawItem.link,
+      description = rawItem.description,
+      seller = rawItem.seller,
+      expiration = rawItem.expiration.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
+      postDate = rawItem.postDate.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
+      email = rawItem.email.flatMap(parseEmail),
+      price = rawItem.price.flatMap(parsePrice),
+      street = rawItem.street,
+      neighborhood = rawItem.neighborhood,
+      city = rawItem.city,
+      gender = rawItem.gender.flatMap(parseGender),
+      contract = rawItem.contract.flatMap(textToBoolean),
+      basicExpenses = rawItem.basicExpenses.flatMap(textToBoolean),
+      laundry = rawItem.laundry.flatMap(textToBoolean),
+      internet = rawItem.internet.flatMap(textToBoolean),
+      animals = rawItem.animals.flatMap(textToBoolean)
+    )
   }
 
     def textToBoolean(text: String): Option[Boolean] =
@@ -61,8 +64,8 @@ object UFSCParser {
 
   def parsePrice(price: String): Option[Int] = {
     val noDecimal = price.split(",").head
-    "[\\d.]+".r findFirstMatchIn noDecimal match {
-      case Some(r) => Some(r.toString.replace(".", "").toInt)
+    "[\\d+]+".r findFirstMatchIn noDecimal match {
+      case Some(r) => Some(r.toString.toInt)
       case _ => None
     }
   }
@@ -75,10 +78,17 @@ object UFSCParser {
   }
 
   def parseGender(gender: String): Option[String] = {
-    gender match {
-      case "Feminino" => Some("F")
-      case "Masculino" => Some("M")
+    normalize(gender) match {
+      case "feminino" => Some("F")
+      case "masculino" => Some("M")
       case _ => None
+    }
+  }
+
+  def parseDate(date: String): Try[LocalDate] = {
+    Try {
+      val dateAsText = date.split("/")
+      LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
     }
   }
 

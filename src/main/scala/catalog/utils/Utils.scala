@@ -8,34 +8,17 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import scala.util.Try
 
-object Utils {
-
+trait Commom {
   val logger: Logger = LoggerFactory.getLogger(getClass)
+}
 
-  def page(url: String, sleep: Int = 2000): Document = {
-    Thread.sleep(sleep)
-    logger.info(s"Getting page $url")
-    Jsoup.connect(url).get()
-  }
-
+object Utils {
   def normalize(text: String): String = {
     text
-      .replace(" ", "_")
-      .replace("/", "_")
-      .replace("_-_", "_")
-      .replace(",", "")
-      .replace(".", "")
-      .replace(":", "")
       .replaceAll("""(?m)\s+$""", "")
+      .replaceAll("[,.:]", "")
+      .replaceAll("[ /-]", "_")
+      .replaceAll("[_]+", "_")
       .toLowerCase
   }
-
-  def parseDate(date: String): Try[LocalDate] = {
-    Try {
-      val dateAsText = date.split("/")
-      LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
-    }
-  }
-
-  def failIfEmpty(text: String): String = if (text.isEmpty) throw new VerifyError("Text is empty") else text
 }
