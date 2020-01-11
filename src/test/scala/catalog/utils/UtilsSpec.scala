@@ -1,6 +1,5 @@
 package catalog.utils
 
-import catalog.utils.Utils
 import org.scalatest.{FunSpec, Matchers}
 
 class UtilsSpec extends FunSpec with Matchers {

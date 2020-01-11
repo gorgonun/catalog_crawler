@@ -4,10 +4,10 @@ import java.time.LocalDate
 import java.util.Properties
 
 import catalog.pojos._
+import catalog.utils.Utils.normalize
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import catalog.utils.Utils.normalize
 
 import scala.collection.JavaConverters._
 import scala.util.Try

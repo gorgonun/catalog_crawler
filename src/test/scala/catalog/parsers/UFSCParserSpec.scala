@@ -3,7 +3,6 @@ package catalog.parsers
 import java.sql.Timestamp
 import java.time.LocalDate
 
-import catalog.parsers.UFSCParser
 import catalog.pojos.{CompleteItem, RawItem}
 import org.scalatest.{FunSpec, Matchers}
 
