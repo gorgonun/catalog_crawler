@@ -8,18 +8,17 @@ jobs:
       - checkout
 
       - restore_cache:
-          keys: sbt-cache
+          keys:
+            - sbt-{{ checksum "build.sbt" }}
 
       - run:
           name: Compile dist package
           command: cat /dev/null | ./sbt compile
 
       - save_cache:
-          key: sbt-cache
+          key: sbt-{{ checksum "build.sbt" }}
           paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
+            - "~/.ivy2"
 
       - run:
           name: Test
