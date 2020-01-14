@@ -1,0 +1,33 @@
+package catalog.pojos
+
+import java.time.LocalDateTime
+
+case class QARaw(banheiros: Int,
+                 quartos: Int,
+                 iptu: Int,
+                 andar: Option[Int] = None,
+                 endereco: String,
+                 amenidades: List[String],
+                 tipo: String,
+                 instalacoes: List[String],
+                 aluguel_condominio: Int,
+                 for_rent: Boolean,
+                 local: String,
+                 suites: Int,
+                 bairro: String,
+                 aluguel: Int,
+                 foto_capa: String,
+                 photos: List[String],
+                 home_insurance: Int,
+                 condominio: Int,
+                 ultima_publicacao: LocalDateTime,
+                 variant_images_titles: List[String],
+                 variant_images: List[String],
+                 custo: Int,
+                 cidade: String,
+                 visit_status: String,
+                 garantias: List[String],
+                 for_sale: Boolean,
+                 first_publication: LocalDateTime,
+                 condo_iptu: Int,
+                 vagas: Int)
