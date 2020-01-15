@@ -5,13 +5,13 @@ import java.time.LocalDate
 import java.util.Properties
 
 import catalog.pojos.{CompleteItem, RawItem}
-import catalog.utils.Commom
+import catalog.utils.Common
 import catalog.utils.Utils.normalize
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import scala.util.Try
 
-object UFSCParser extends Commom {
+object UFSCParser extends Common {
 
   def start(): Unit = {
     logger.info("Starting ufsc parser")
@@ -38,7 +38,7 @@ object UFSCParser extends Commom {
     CompleteItem(
       category = normalize(rawItem.category),
       date = localDateAsTimestamp(parseDate(rawItem.date).get),
-      title = normalize(rawItem.title),
+      title = rawItem.title,
       image = rawItem.image,
       link = rawItem.link,
       description = rawItem.description,
@@ -90,8 +90,11 @@ object UFSCParser extends Commom {
 
   def parseDate(date: String): Try[LocalDate] = {
     Try {
-      val dateAsText = date.split("/")
-      LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
+      val finalDate = Try(LocalDate.parse(date))
+      finalDate.getOrElse{
+        val dateAsText = date.split("/")
+        LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
+      }
     }
   }
 

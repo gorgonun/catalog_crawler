@@ -1,9 +1,9 @@
 package catalog.setups
 
 import catalog.parsers.UFSCParser
-import catalog.utils.Commom
+import catalog.utils.Common
 
-object ParserSetup extends Commom {
+object ParserSetup extends Common {
 
   def main(args: Array[String]): Unit = {
     logger.info("Starting parsers")

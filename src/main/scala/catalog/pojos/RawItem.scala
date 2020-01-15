@@ -19,4 +19,7 @@ case class RawItem(category: String,
                    basicExpenses: Option[String] = None,
                    laundry: Option[String] = None,
                    internet: Option[String] = None,
-                   animals: Option[String] = None)
+                   animals: Option[String] = None,
+                   rent: Option[String] = None,
+                   cooker: Option[String] = None,
+                   fridge: Option[String] = None)
