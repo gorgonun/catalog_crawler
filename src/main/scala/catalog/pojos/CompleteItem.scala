@@ -2,7 +2,8 @@ package catalog.pojos
 
 import java.sql.Timestamp
 
-case class CompleteItem(category: String,
+case class CompleteItem(id: Int,
+                        category: String,
                         date: Timestamp,
                         title: String,
                         link: String,

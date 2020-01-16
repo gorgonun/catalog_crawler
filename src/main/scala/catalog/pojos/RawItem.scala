@@ -1,6 +1,7 @@
 package catalog.pojos
 
-case class RawItem(category: String,
+case class RawItem(id: Int,
+                   category: String,
                    date: String,
                    title: String,
                    image: String,
@@ -21,5 +22,5 @@ case class RawItem(category: String,
                    internet: Option[String] = None,
                    animals: Option[String] = None,
                    rent: Option[String] = None,
-                   cooker: Option[String] = None,
+                   stove: Option[String] = None,
                    fridge: Option[String] = None)

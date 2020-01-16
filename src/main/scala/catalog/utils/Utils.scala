@@ -20,4 +20,12 @@ object Utils {
       .replaceAll("[_]+", "_")
       .toLowerCase
   }
+
+  def parseInt(price: String): Option[Int] = {
+    val noDecimal = price.split(",").head
+    "[\\d+]+".r findFirstMatchIn noDecimal match {
+      case Some(r) => Some(r.toString.toInt)
+      case _ => None
+    }
+  }
 }

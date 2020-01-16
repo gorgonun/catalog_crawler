@@ -1,12 +1,10 @@
 package catalog.crawlers
 
 import java.time.LocalDate
-import java.util.Properties
 
 import catalog.pojos._
-import catalog.setups.CrawlerSetup.logger
-import catalog.utils.Utils.normalize
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import catalog.utils.Utils._
+import org.apache.spark.sql.{Dataset, SparkSession}
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
@@ -15,25 +13,15 @@ import scala.util.Try
 
 object UFSCCrawler extends Crawler {
 
-  def start(): Unit = {
-    logger.info("Starting ufsc crawler")
-
-    val spark = SparkSession
-      .builder()
-      .master("local")
-      .getOrCreate()
-
+  def start()(implicit spark: SparkSession): Dataset[RawItem] = {
     import spark.implicits._
 
+    logger.info("Starting ufsc crawler")
+
     val url = "https://classificados.inf.ufsc.br/latestads.php?offset="
-    val dbUrl = "jdbc:" + sys.env("DATABASE_URL")
-
-    val connectionProperties = new Properties()
-    connectionProperties.setProperty("Driver", "org.postgresql.Driver")
-
     val sleep = 2000
-
     val today = LocalDate.now()
+
     val totalPages = getPagesNumber(15)
       .map(pageNumber => getBodyElements(page(url + pageNumber.toString, sleep)))
       .takeWhile(page => pageDateIsGreaterOrEqual(page, today))
@@ -48,9 +36,9 @@ object UFSCCrawler extends Crawler {
         .flatMap(_.toOption)
         .map(ri => getCompleteInfo(page(ri.link), ri)))
 
-    table.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "rawitems", connectionProperties = connectionProperties)
-
     logger.info("Finished ufsc crawler")
+
+    table
   }
 
   def getPagesNumber(step: Int, limit: Int = 5): Stream[Int] = {
@@ -73,10 +61,14 @@ object UFSCCrawler extends Crawler {
 
   def getTableRows(page: Elements): Iterator[Elements] = page.iterator.asScala.map(_.select("td"))
 
+  def getIdFromLink(link: String): Int = parseInt(link.split("=")(1)).get
+
   def parse(items: Elements): Try[RawItem] = {
     val link = "https://classificados.inf.ufsc.br/" + items.get(1).selectFirst("a").attr("href")
+    val id = getIdFromLink(link)
     val temp = Try(
       RawItem(
+        id = id,
         category = normalize(items.get(0).text),
         title = items.get(1).text,
         link = link,

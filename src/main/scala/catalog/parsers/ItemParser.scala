@@ -2,40 +2,25 @@ package catalog.parsers
 
 import java.sql.Timestamp
 import java.time.LocalDate
-import java.util.Properties
 
 import catalog.pojos.{CompleteItem, RawItem}
 import catalog.utils.Common
-import catalog.utils.Utils.normalize
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import catalog.utils.Utils._
+import org.apache.spark.sql.{Dataset, SparkSession}
 
 import scala.util.Try
 
-object UFSCParser extends Common {
+object ItemParser extends Common {
 
-  def start(): Unit = {
-    logger.info("Starting ufsc parser")
-    val spark = SparkSession
-      .builder()
-      .master("local")
-      .getOrCreate()
-
+  def parse(rawItems: Dataset[RawItem])(implicit spark: SparkSession): Dataset[CompleteItem] = {
     import spark.implicits._
 
-    val dbUrl = "jdbc:" + sys.env("DATABASE_URL")
-    val connectionProperties = new Properties()
-    connectionProperties.setProperty("Driver", "org.postgresql.Driver")
-
-    val rawItems = spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
-    val completeItems = rawItems.map(parse)
-
-    completeItems.write.mode(SaveMode.Append).jdbc(url = dbUrl, table = "completeitems", connectionProperties = connectionProperties)
-
-    logger.info("Finished ufsc parser")
+    rawItems.map(parse)
   }
 
   def parse(rawItem: RawItem): CompleteItem = {
     CompleteItem(
+      id = rawItem.id,
       category = normalize(rawItem.category),
       date = localDateAsTimestamp(parseDate(rawItem.date).get),
       title = rawItem.title,
@@ -46,7 +31,7 @@ object UFSCParser extends Common {
       expiration = rawItem.expiration.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
       postDate = rawItem.postDate.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
       email = rawItem.email.flatMap(parseEmail),
-      price = rawItem.price.flatMap(parsePrice),
+      price = rawItem.price.flatMap(parseInt),
       street = rawItem.street,
       neighborhood = rawItem.neighborhood,
       city = rawItem.city,
@@ -64,14 +49,6 @@ object UFSCParser extends Common {
       case "sim" => Some(true)
       case _ => Some(false)
     }
-
-  def parsePrice(price: String): Option[Int] = {
-    val noDecimal = price.split(",").head
-    "[\\d+]+".r findFirstMatchIn noDecimal match {
-      case Some(r) => Some(r.toString.toInt)
-      case _ => None
-    }
-  }
 
   def parseEmail(email: String): Option[String] = {
     "\\w\\S+[@]\\w+[.]\\w+".r findFirstMatchIn email match {

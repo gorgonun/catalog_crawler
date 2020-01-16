@@ -64,6 +64,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
 
     val expected = Success(RawItem(
+      184761,
       "ofertas_de_quartos_vagas_centro",
       "08/01/2020",
       "Alugo quarto em apartamento no Centro, com óti...",
@@ -91,6 +92,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     rawFile.close()
 
     val expected = RawItem(
+      184761,
       "ofertas_de_quartos_vagas_centro",
       "08/01/2020",
       "Alugo quarto em apartamento no Centro, com óti...",
