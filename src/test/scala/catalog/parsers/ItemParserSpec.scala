@@ -37,10 +37,10 @@ class ItemParserSpec extends FunSpec with Matchers {
   }
 
   it("should parse date") {
-    val validDates = Seq("23/01/2020 (em 13 dias)", "22/01/2020")
+    val validDates = Seq("23/01/2020 (em 13 dias)", "22/01/2020", "2020-01-01T23:59:29Z")
     val invalidDate = "22/"
 
-    validDates.map(ItemParser.parseDate) shouldBe Seq(Success(LocalDate.of(2020, 1, 23)), Success(LocalDate.of(2020, 1, 22)))
+    validDates.map(ItemParser.parseDate) shouldBe Seq(Success(LocalDate.of(2020, 1, 23)), Success(LocalDate.of(2020, 1, 22)), Success(LocalDate.of(2020, 1, 1)))
     ItemParser.parseDate(invalidDate).isFailure shouldBe true
   }
 

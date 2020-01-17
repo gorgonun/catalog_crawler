@@ -1,6 +1,6 @@
 package catalog.parsers
 
-import catalog.pojos.{RawItem, RawQA}
+import catalog.pojos.RawQA
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.json4s.{DefaultFormats, JArray, JValue}
 

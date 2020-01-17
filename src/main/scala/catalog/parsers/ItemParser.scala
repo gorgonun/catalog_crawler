@@ -1,7 +1,8 @@
 package catalog.parsers
 
 import java.sql.Timestamp
-import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId, ZonedDateTime}
 
 import catalog.pojos.{CompleteItem, RawItem}
 import catalog.utils.Common
@@ -67,7 +68,7 @@ object ItemParser extends Common {
 
   def parseDate(date: String): Try[LocalDate] = {
     Try {
-      val finalDate = Try(LocalDate.parse(date))
+      val finalDate = Try(ZonedDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.systemDefault())).toLocalDate)
       finalDate.getOrElse{
         val dateAsText = date.split("/")
         LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)

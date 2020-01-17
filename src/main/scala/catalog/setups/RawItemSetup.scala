@@ -1,13 +1,13 @@
 package catalog.setups
 
-import java.util.Properties
-
+import catalog.converters.Converters
 import catalog.crawlers.{QACrawler, UFSCCrawler}
 import catalog.parsers.QAParser
 import catalog.pojos.RawItem
 import catalog.utils.Common
-import catalog.converters.Converters
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.SaveMode
+
+import scala.util.Try
 
 object RawItemSetup extends Common with Converters with Setup {
 
@@ -19,10 +19,13 @@ object RawItemSetup extends Common with Converters with Setup {
     val qaData = QACrawler.crawl()
     val qaTable = QAParser.parse(qaData)(spark).map(convert)
 
-    spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
-      .union(ufscTable)
-      .union(qaTable)
-      .dropDuplicates("id")
+    Try {
+      spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
+        .union(ufscTable)
+        .union(qaTable)
+        .dropDuplicates("id")
+    }
+      .getOrElse(ufscTable.union(qaTable))
       .write
       .mode(SaveMode.Overwrite)
       .jdbc(url = dbUrl, table = "rawitems", connectionProperties = connectionProperties)

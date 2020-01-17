@@ -1,9 +1,9 @@
 package catalog.crawlers
 
 import catalog.utils.Common
-import scalaj.http.Http
 import org.json4s._
 import org.json4s.native.JsonMethods._
+import scalaj.http.Http
 
 object QACrawler extends Common {
 
