@@ -1,6 +1,6 @@
 package catalog.converters
 
-import catalog.pojos.{RawItem, RawQA}
+import catalog.pojos.{RawItem, RawQA, RawZI}
 import catalog.utils.Utils.{normalize, parseInt}
 
 trait Converters {
@@ -30,6 +30,13 @@ trait Converters {
       rent = rawQA.aluguel,
       stove = rawQA.amenidades.flatMap(_.find(_ == "FOGAO_INCLUSO").map(_ => "sim")),
       fridge = rawQA.amenidades.flatMap(_.find(_ == "GELADEIRA_INCLUSO").map(_ => "sim"))
+    )
+  }
+
+  def convert(rawZI: RawZI): RawItem = {
+    RawItem(
+      id = parseInt(rawZI.id),
+      category =
     )
   }
 }

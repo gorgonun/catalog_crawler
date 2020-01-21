@@ -1,6 +1,6 @@
 package catalog.crawlers
 
-import catalog.pojos.RawZI
+import catalog.pojos.{AccountZI, LinkZI, MediaZI, RawZI}
 import org.json4s.{DefaultFormats, JArray, JValue}
 import org.json4s.native.JsonMethods.parse
 import scalaj.http.Http
@@ -355,7 +355,13 @@ object ZICrawler {
 
     val a = (parse(resp) \ "search" \ "result")
       .findField(_._1 == "listings")
-      .map(_._2.extract[JArray].arr.map(l => (l \ "listing").extract[RawZI]))
+      .map(_._2.extract[JArray].arr
+        .map{l => (l \ "listing").extract[RawZI]
+          .copy(
+            account = (l \ "account").extract[Option[AccountZI]],
+            medias = (l \ "medias").extract[Option[Array[MediaZI]]],
+            link = (l \ "link").extract[Option[LinkZI]])
+        })
       .getOrElse(List.empty)
 
     println(a)

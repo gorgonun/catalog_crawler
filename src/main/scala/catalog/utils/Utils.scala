@@ -28,4 +28,8 @@ object Utils {
       case _ => None
     }
   }
+
+  def inferCategory(propertyType: String, negociator: String, `for`: String = "rent"): String = {
+    s"$propertyType para $`for` com $negociator"
+  }
 }
