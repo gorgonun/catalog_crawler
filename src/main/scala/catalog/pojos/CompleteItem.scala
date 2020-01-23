@@ -2,8 +2,12 @@ package catalog.pojos
 
 import java.sql.Timestamp
 
+import catalog.pojos.ContractEnum.ContractEnum
+import catalog.pojos.HabitationEnum.HabitationEnum
+import catalog.pojos.NegotiatorEnum.NegotiatorEnum
+
 case class CompleteItem(id: Int,
-                        category: String,
+                        category: String, // TODO: Remove category and replace with habitation + negotiator + contractType
                         date: Timestamp,
                         title: String,
                         link: String,
@@ -24,7 +28,35 @@ case class CompleteItem(id: Int,
                         floor: Option[Int] = None,
                         area: Option[Int] = None,
                         contract: Option[Boolean] = None,
-                        basicExpenses: Option[Boolean] = None,
+                        basicExpenses: Option[Boolean] = None, // TODO: separate between water, light, gas, etc
                         laundry: Option[Boolean] = None,
                         internet: Option[Boolean] = None,
-                        animals: Option[Boolean] = None)
+                        animals: Option[Boolean] = None,
+                        rent: Option[Int] = None,
+                        stove: Option[Boolean] = None,
+                        fridge: Option[Boolean] = None,
+                        habitation: Option[HabitationEnum] = None,
+                        negotiator: Option[NegotiatorEnum] = None,
+                        contractType: Option[ContractEnum] = None,
+                        active: Boolean = true,
+                        furnished: Option[Boolean] = None)
+
+object HabitationEnum extends Enumeration {
+  type HabitationEnum = Value
+
+  val Home: Value = Value("home")
+  val Apartment: Value = Value("apartment")
+}
+
+object NegotiatorEnum extends Enumeration {
+  type NegotiatorEnum = Value
+
+  val Owner: Value = Value("owner")
+  val RealState: Value = Value("real_state")
+}
+
+object ContractEnum extends Enumeration {
+  type ContractEnum = Value
+
+  val Rent: Value = Value("rent")
+}

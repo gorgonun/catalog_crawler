@@ -23,4 +23,9 @@ case class RawItem(id: Int,
                    animals: Option[String] = None,
                    rent: Option[String] = None,
                    stove: Option[String] = None,
-                   fridge: Option[String] = None)
+                   fridge: Option[String] = None,
+                   habitation: Option[String] = None,
+                   negotiator: Option[String] = None,
+                   contractType: Option[String] = None,
+                   active: Option[String] = None,
+                   furnished: Option[String] = None)

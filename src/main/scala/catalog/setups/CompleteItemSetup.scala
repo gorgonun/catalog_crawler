@@ -21,7 +21,7 @@ object CompleteItemSetup extends Common with Setup {
         .jdbc(dbUrl, "completeitems", connectionProperties)
         .as[CompleteItem]
         .union(completeItems)
-        .dropDuplicates("id")
+        .distinct()
     }
       .getOrElse(completeItems)
       .write

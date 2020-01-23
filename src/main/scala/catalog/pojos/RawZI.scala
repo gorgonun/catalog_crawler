@@ -2,6 +2,8 @@ package catalog.pojos
 
 case class RawZI(createdAt: String,
                  id: String,
+                 contractType: String,
+                 unitTypes: Array[String],
                  suites: Array[String],
                  bathrooms: Array[String],
                  bedrooms: Array[String],
@@ -9,7 +11,8 @@ case class RawZI(createdAt: String,
                  status: String,
                  description: String,
                  title: String,
+                 amenities: Array[String],
                  address: AddressZI,
-                 account: Option[AccountZI] = None,
-                 medias: Option[Array[MediaZI]] = None,
-                 link: Option[LinkZI] = None)
+                 account: Option[AccountZI],
+                 medias: Option[Array[MediaZI]],
+                 link: Option[LinkZI])

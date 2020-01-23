@@ -23,7 +23,7 @@ object RawItemSetup extends Common with Converters with Setup {
       spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
         .union(ufscTable)
         .union(qaTable)
-        .dropDuplicates("id")
+        .distinct()
     }
       .getOrElse(ufscTable.union(qaTable))
       .write
