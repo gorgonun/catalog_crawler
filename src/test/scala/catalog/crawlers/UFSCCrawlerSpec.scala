@@ -39,9 +39,9 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     val tomorrow = today.plusDays(1)
 
     page.get(1).select("td").get(2).text(s"${today.getDayOfMonth}/${today.getMonthValue}/${today.getYear}")
-    val todayResult = UFSCCrawler.pageDateIsGreaterOrEqual(page, today)
+    val todayResult = UFSCCrawler.pageDateIsBetween(page, today)
     page.get(1).select("td").get(2).text(s"${tomorrow.getDayOfMonth}/${tomorrow.getMonthValue}/${tomorrow.getYear}")
-    val tomorrowResult = UFSCCrawler.pageDateIsGreaterOrEqual(page, today)
+    val tomorrowResult = UFSCCrawler.pageDateIsBetween(page, today)
 
     todayResult shouldBe true
     tomorrowResult shouldBe true
@@ -54,7 +54,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     val yesterday = today.minusDays(1)
 
     page.get(1).select("td").get(2).text(s"${yesterday.getDayOfMonth}/${yesterday.getMonthValue}/${yesterday.getYear}")
-    val yesterdayResult = UFSCCrawler.pageDateIsGreaterOrEqual(page, today)
+    val yesterdayResult = UFSCCrawler.pageDateIsBetween(page, today)
 
     yesterdayResult shouldBe false
   }

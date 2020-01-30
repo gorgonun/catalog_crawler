@@ -22,8 +22,8 @@ object ItemParser extends Common {
   def parse(rawItem: RawItem): CompleteItem = {
     CompleteItem(
       id = rawItem.id,
-      category = normalize(rawItem.category),
-      date = localDateAsTimestamp(parseDate(rawItem.date).get),
+      category = Some(normalize(rawItem.category.getOrElse(""))),
+      postDate = localDateAsTimestamp(parseDate(rawItem.date).get),
       title = rawItem.title,
       image = rawItem.image,
       link = rawItem.link,

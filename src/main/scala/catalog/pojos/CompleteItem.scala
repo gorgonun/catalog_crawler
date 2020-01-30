@@ -35,18 +35,11 @@ case class CompleteItem(id: Int,
                         rent: Option[Int] = None,
                         stove: Option[Boolean] = None,
                         fridge: Option[Boolean] = None,
-                        habitation: Option[HabitationEnum] = None,
+                        habitation: Option[HabitationEnum.Value] = None,
                         negotiator: Option[NegotiatorEnum] = None,
                         contractType: Option[ContractEnum] = None,
                         active: Boolean = true,
                         furnished: Option[Boolean] = None)
-
-object HabitationEnum extends Enumeration {
-  type HabitationEnum = Value
-
-  val Home: Value = Value("home")
-  val Apartment: Value = Value("apartment")
-}
 
 object NegotiatorEnum extends Enumeration {
   type NegotiatorEnum = Value
