@@ -4,7 +4,7 @@ import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId, ZonedDateTime}
 
-import catalog.pojos.{CompleteItem, RawItem}
+import catalog.pojos.{CompleteItem, HabitationEnum, RawItem}
 import catalog.utils.Common
 import catalog.utils.Utils._
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -20,29 +20,28 @@ object ItemParser extends Common {
   }
 
   def parse(rawItem: RawItem): CompleteItem = {
-    CompleteItem(
+    val ciTemp = CompleteItem(
       id = rawItem.id,
-      category = Some(normalize(rawItem.category.getOrElse(""))),
-      postDate = localDateAsTimestamp(parseDate(rawItem.date).get),
+      category = "",
+      date = localDateAsTimestamp(parseDate(rawItem.postDate).get),
       title = rawItem.title,
-      image = rawItem.image,
       link = rawItem.link,
+      image = "",
       description = rawItem.description,
-      seller = rawItem.seller,
-      expiration = rawItem.expiration.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
-      postDate = rawItem.postDate.flatMap(r => parseDate(r).toOption.map(localDateAsTimestamp)),
-      email = rawItem.email.flatMap(parseEmail),
+      seller = rawItem.sellerName,
+      email = rawItem.sellerEmail.flatMap(parseEmail),
       price = rawItem.price.flatMap(parseInt),
       street = rawItem.street,
       neighborhood = rawItem.neighborhood,
       city = rawItem.city,
       gender = rawItem.gender.flatMap(parseGender),
       contract = rawItem.contract.flatMap(textToBoolean),
-      basicExpenses = rawItem.basicExpenses.flatMap(textToBoolean),
+      basicExpenses = rawItem.waterIncluded.flatMap(textToBoolean),
       laundry = rawItem.laundry.flatMap(textToBoolean),
-      internet = rawItem.internet.flatMap(textToBoolean),
-      animals = rawItem.animals.flatMap(textToBoolean)
+      internet = rawItem.internetIncluded.flatMap(textToBoolean),
+      animals = rawItem.animalsAllowed.flatMap(textToBoolean)
     )
+    ciTemp.copy(category = s"${ciTemp.habitation}_ofertada_pelo_${ciTemp.negotiator}_para_${ciTemp.contractType}")
   }
 
     def textToBoolean(text: String): Option[Boolean] =
@@ -78,5 +77,17 @@ object ItemParser extends Common {
 
   def localDateAsTimestamp(date: LocalDate): Timestamp = {
     Timestamp.valueOf(date.atStartOfDay)
+  }
+
+  def inferHabitationTypeFromRawCategory(normalizedRawCategory: Option[String]): Option[HabitationEnum.Value] = {
+    val habitationTypes = Map("apart" -> HabitationEnum.Apartment, "cas" -> HabitationEnum.Home, "kit" -> HabitationEnum.Kitnet)
+    habitationTypes
+      .keys
+      .flatMap{ht =>
+        normalizedRawCategory
+          .filter(_.contains(ht))
+      }
+      .lastOption
+      .flatMap(habitationTypes.get)
   }
 }

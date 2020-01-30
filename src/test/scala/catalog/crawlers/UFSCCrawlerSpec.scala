@@ -2,6 +2,7 @@ package catalog.crawlers
 
 import java.time.LocalDate
 
+import catalog.parsers.UFSCParser
 import catalog.pojos.RawItem
 import org.jsoup.Jsoup
 import org.scalatest.{FunSpec, Matchers}
@@ -39,9 +40,9 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     val tomorrow = today.plusDays(1)
 
     page.get(1).select("td").get(2).text(s"${today.getDayOfMonth}/${today.getMonthValue}/${today.getYear}")
-    val todayResult = UFSCCrawler.pageDateIsBetween(page, today)
+    val todayResult = UFSCCrawler.pageDateIsBetween(page, today, tomorrow)
     page.get(1).select("td").get(2).text(s"${tomorrow.getDayOfMonth}/${tomorrow.getMonthValue}/${tomorrow.getYear}")
-    val tomorrowResult = UFSCCrawler.pageDateIsBetween(page, today)
+    val tomorrowResult = UFSCCrawler.pageDateIsBetween(page, today, tomorrow)
 
     todayResult shouldBe true
     tomorrowResult shouldBe true
@@ -54,7 +55,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     val yesterday = today.minusDays(1)
 
     page.get(1).select("td").get(2).text(s"${yesterday.getDayOfMonth}/${yesterday.getMonthValue}/${yesterday.getYear}")
-    val yesterdayResult = UFSCCrawler.pageDateIsBetween(page, today)
+    val yesterdayResult = UFSCCrawler.pageDateIsBetween(page, today, today.plusDays(1))
 
     yesterdayResult shouldBe false
   }
@@ -67,11 +68,9 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
       184761,
       "ofertas_de_quartos_vagas_centro",
       "08/01/2020",
-      "Alugo quarto em apartamento no Centro, com óti...",
-      "layout_images/new/noimg.gif",
       "https://classificados.inf.ufsc.br/detail.php?id=184761"))
 
-    UFSCCrawler.parse(rawItem) shouldBe expected
+    UFSCParser.parse(rawItem) shouldBe expected
   }
 
   it("should fail if a necessary field is not found") {
@@ -79,14 +78,14 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
     rawItem.get(0).text("")
 
-    UFSCCrawler.parse(rawItem).isFailure shouldBe true
+    UFSCParser.parse(rawItem).isFailure shouldBe true
   }
 
   it("should complete rawitem with the complete info") {
     val infoFile = Source.fromResource("UFSCCrawlerSpec/complete_info_page.html")
     val infoPage = Jsoup.parse(infoFile.getLines.mkString)
     val rawFile = Source.fromResource("UFSCCrawlerSpec/raw_item.html")
-    val rawItem = UFSCCrawler.parse(Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td"))
+    val rawItem = UFSCParser.parse(Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td"))
 
     infoFile.close()
     rawFile.close()
@@ -95,9 +94,9 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
       184761,
       "ofertas_de_quartos_vagas_centro",
       "08/01/2020",
-      "Alugo quarto em apartamento no Centro, com óti...",
-      "layout_images/new/noimg.gif",
       "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      Some("Alugo quarto em apartamento no Centro, com óti..."),
+      None,
       Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
       Some("Isabela Amorim de Oliveira"),
       Some("23/01/2020 (em 13 dias)"),
@@ -109,6 +108,6 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
       Some("Florianópolis"),
       Some("Feminino"))
 
-    UFSCCrawler.getCompleteInfo(infoPage, rawItem.get) shouldBe expected
+    UFSCParser.getCompleteInfo(infoPage, rawItem.get) shouldBe expected
   }
 }

@@ -44,12 +44,12 @@ case class CompleteItem(id: Int,
 object NegotiatorEnum extends Enumeration {
   type NegotiatorEnum = Value
 
-  val Owner: Value = Value("owner")
-  val RealState: Value = Value("real_state")
+  val Owner: Value = Value("dono")
+  val RealState: Value = Value("imobiliária")
 }
 
 object ContractEnum extends Enumeration {
   type ContractEnum = Value
 
-  val Rent: Value = Value("rent")
+  val Rent: Value = Value("aluguel")
 }

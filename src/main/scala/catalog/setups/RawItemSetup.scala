@@ -2,7 +2,7 @@ package catalog.setups
 
 import catalog.converters.Converters
 import catalog.crawlers.{QACrawler, UFSCCrawler}
-import catalog.parsers.QAParser
+import catalog.parsers.{QAParser, UFSCParser}
 import catalog.pojos.RawItem
 import catalog.utils.Common
 import org.apache.spark.sql.SaveMode
@@ -14,7 +14,8 @@ object RawItemSetup extends Common with Converters with Setup {
   def crawlRawItem(): Unit = {
     import spark.implicits._
 
-    val ufscTable = UFSCCrawler.start()(spark)
+    val ufscData = UFSCCrawler.start()
+    val ufscTable = UFSCParser.parse(ufscData)(spark)
 
     val qaData = QACrawler.crawl()
     val qaTable = QAParser.parse(qaData)(spark).map(convert)

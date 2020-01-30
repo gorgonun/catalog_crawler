@@ -25,18 +25,6 @@ object UFSCParser extends Crawler {
 
   def getIdFromLink(link: String): Option[Int] = parseInt(link.split("=")(1))
 
-  def inferHabitationTypeFromRawCategory(normalizedRawCategory: Option[String]): Option[HabitationEnum.Value] = {
-    val habitationTypes = Map("apart" -> HabitationEnum.Apartment, "cas" -> HabitationEnum.Home, "kit" -> HabitationEnum.Kitnet)
-    habitationTypes
-      .keys
-      .flatMap{ht =>
-        normalizedRawCategory
-          .filter(_.contains(ht))
-      }
-      .lastOption
-      .flatMap(habitationTypes.get)
-  }
-
   def parse(items: Elements): Try[RawItem] = {
     Try {
       val link = "https://classificados.inf.ufsc.br/" + items.get(1).selectFirst("a").attr("href")
