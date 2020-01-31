@@ -3,17 +3,23 @@ package catalog.parsers
 import java.sql.Timestamp
 import java.time.LocalDate
 
-import catalog.pojos.{CompleteItem, RawItem}
+import catalog.pojos.{CompleteItem, HabitationEnum, RawItem}
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.util.Success
 
 class ItemParserSpec extends FunSpec with Matchers {
 
-  it("should convert text to valid boolean") {
-    val texts = Seq("sim", "Sim", "SIm", "SIM", "hjjk")
+  it("should infer habitation type from category") {
+    val categories = Seq("aluga_se_casa", "casa_para_", "tenho_uma_casinha_na", "um_apartamento", "novo_apart_", "kitnet_na", "", "jose")
+    val expected = Seq(HabitationEnum.Home, HabitationEnum.Home, HabitationEnum.Home, HabitationEnum.Apartment, HabitationEnum.Apartment, HabitationEnum.Kitnet)
+    categories.flatMap(c => ItemParser.inferHabitationTypeFromRawCategory(Some(c))) shouldBe expected
+  }
 
-    texts.map(ItemParser.textToBoolean) shouldBe Seq(Some(true), Some(true), Some(true), Some(true), Some(false))
+  it("should convert text to valid boolean") {
+    val texts = Seq("sim", " Sim", "__SIm", "SIM", "sI", "nao", "NAo", "na", "jri", "oi")
+
+    texts.flatMap(ItemParser.textToBoolean) shouldBe Seq(true, true, true, true, true, false ,false, false)
   }
 
   it("should parse emails") {
@@ -27,12 +33,12 @@ class ItemParserSpec extends FunSpec with Matchers {
   }
 
   it("should parse gender") {
-    val validMascGender = Seq("masculino", "Masculino", "MaSculino", "MASCULINO")
-    val validFemGender = Seq("feminino", "Feminino", "FemininO", "FEMININO")
+    val validMascGender = Seq("masculino", "masc", "homem", "MaSculino", "MASCULINO", "homen")
+    val validFemGender = Seq("feminino", "fem", "FemininO", "FEMININO", "mulher", "mulhe")
     val invalidGender = "j"
 
-    validMascGender.map(ItemParser.parseGender) shouldBe Seq(Some("M"), Some("M"), Some("M"), Some("M"))
-    validFemGender.map(ItemParser.parseGender) shouldBe Seq(Some("F"), Some("F"), Some("F"), Some("F"))
+    validMascGender.flatMap(ItemParser.parseGender) shouldBe Seq("M", "M", "M", "M", "M", "M")
+    validFemGender.flatMap(ItemParser.parseGender) shouldBe Seq("F", "F", "F", "F", "F", "F")
     ItemParser.parseGender(invalidGender) shouldBe None
   }
 

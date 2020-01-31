@@ -2,6 +2,7 @@ package catalog.utils
 
 import java.text.Normalizer
 import java.util.regex.Pattern
+import scala.util.matching.Regex
 
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -27,5 +28,19 @@ object Utils {
       case Some(r) => Some(r.toString.toInt)
       case _ => None
     }
+  }
+
+  def parseStringByPrimitive(str: String, primitiveMap: Map[String, String]): Option[String] = {
+    primitiveMap
+      .keys
+      .flatMap(primitive => if (str.contains(primitive)) primitiveMap.get(primitive) else None)
+      .headOption
+  }
+
+  def parseStringByRegex(str: String, regexMap: Map[String, String]): Option[String] = {
+    regexMap
+      .keys
+      .flatMap(_.r findFirstIn str)
+      .headOption
   }
 }

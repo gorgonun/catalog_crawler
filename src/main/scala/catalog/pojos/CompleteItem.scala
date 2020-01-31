@@ -3,7 +3,6 @@ package catalog.pojos
 import java.sql.Timestamp
 
 import catalog.pojos.ContractEnum.ContractEnum
-import catalog.pojos.HabitationEnum.HabitationEnum
 import catalog.pojos.NegotiatorEnum.NegotiatorEnum
 
 case class CompleteItem(id: Int,

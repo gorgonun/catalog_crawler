@@ -44,10 +44,9 @@ object ItemParser extends Common {
     ciTemp.copy(category = s"${ciTemp.habitation}_ofertada_pelo_${ciTemp.negotiator}_para_${ciTemp.contractType}")
   }
 
-    def textToBoolean(text: String): Option[Boolean] =
-    normalize(text).toLowerCase match {
-      case "sim" => Some(true)
-      case _ => Some(false)
+    def textToBoolean(text: String): Option[Boolean] = {
+      val normalizedText = normalize(text)
+      if (normalizedText.contains("si")) Some(true) else if (normalizedText.contains("na")) Some(false) else None
     }
 
   def parseEmail(email: String): Option[String] = {
@@ -58,11 +57,8 @@ object ItemParser extends Common {
   }
 
   def parseGender(gender: String): Option[String] = {
-    normalize(gender) match {
-      case "feminino" => Some("F")
-      case "masculino" => Some("M")
-      case _ => None
-    }
+    val genders = Map("masc" -> "M", "hom" -> "M", "fem" -> "F", "mulh" -> "F")
+    parseStringByPrimitive(normalize(gender), genders)
   }
 
   def parseDate(date: String): Try[LocalDate] = {
@@ -79,15 +75,8 @@ object ItemParser extends Common {
     Timestamp.valueOf(date.atStartOfDay)
   }
 
-  def inferHabitationTypeFromRawCategory(normalizedRawCategory: Option[String]): Option[HabitationEnum.Value] = {
+  def inferHabitationTypeFromRawCategory(normalizedRawCategory: Option[String]): Option[String] = {
     val habitationTypes = Map("apart" -> HabitationEnum.Apartment, "cas" -> HabitationEnum.Home, "kit" -> HabitationEnum.Kitnet)
-    habitationTypes
-      .keys
-      .flatMap{ht =>
-        normalizedRawCategory
-          .filter(_.contains(ht))
-      }
-      .lastOption
-      .flatMap(habitationTypes.get)
+    normalizedRawCategory.flatMap(parseStringByPrimitive(_, habitationTypes))
   }
 }
