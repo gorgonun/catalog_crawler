@@ -4,7 +4,7 @@ import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId, ZonedDateTime}
 
-import catalog.pojos.{CompleteItem, HabitationEnum, RawItem}
+import catalog.pojos.{CompleteItem, ContractEnum, HabitationEnum, NegotiatorEnum, RawItem}
 import catalog.utils.Common
 import catalog.utils.Utils._
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -22,13 +22,14 @@ object ItemParser extends Common {
   def parse(rawItem: RawItem): CompleteItem = {
     val ciTemp = CompleteItem(
       id = rawItem.id,
-      category = "",
-      date = localDateAsTimestamp(parseDate(rawItem.postDate).get),
+      categories = List.empty,
+      postDate = localDateAsTimestamp(parseDate(rawItem.postDate).get),
+      expiration = rawItem.expirationDate.map(date => localDateAsTimestamp(parseDate(date).get)),
       title = rawItem.title,
       link = rawItem.link,
-      image = "",
+      images = rawItem.images,
       description = rawItem.description,
-      seller = rawItem.sellerName,
+      sellerName = rawItem.sellerName,
       email = rawItem.sellerEmail.flatMap(parseEmail),
       price = rawItem.price.flatMap(parseInt),
       street = rawItem.street,
@@ -39,15 +40,19 @@ object ItemParser extends Common {
       basicExpenses = rawItem.waterIncluded.flatMap(textToBoolean),
       laundry = rawItem.laundry.flatMap(textToBoolean),
       internet = rawItem.internetIncluded.flatMap(textToBoolean),
-      animals = rawItem.animalsAllowed.flatMap(textToBoolean)
+      animals = rawItem.animalsAllowed.flatMap(textToBoolean),
+      habitation = inferHabitationTypeFromRawNormalizedText(rawItem.category.getOrElse("")).orElse(inferHabitationTypeFromRawNormalizedText(normalize(rawItem.description.getOrElse("")))),
+      negotiator = inferNegotiatorTypeFromRawNormalizedText(rawItem.category.getOrElse("")).orElse(inferNegotiatorTypeFromRawNormalizedText(normalize(rawItem.description.getOrElse("")))),
+      contractType = inferContractTypeFromRawNormalizedText(rawItem.category.getOrElse("")).orElse(inferContractTypeFromRawNormalizedText(normalize(rawItem.description.getOrElse(""))))
     )
-    ciTemp.copy(category = s"${ciTemp.habitation}_ofertada_pelo_${ciTemp.negotiator}_para_${ciTemp.contractType}")
+    ciTemp
+//    ciTemp.copy(categories = List(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).flatMap(a => _.toString))
   }
 
-    def textToBoolean(text: String): Option[Boolean] = {
-      val normalizedText = normalize(text)
-      if (normalizedText.contains("si")) Some(true) else if (normalizedText.contains("na")) Some(false) else None
-    }
+  def textToBoolean(text: String): Option[Boolean] = {
+    val normalizedText = normalize(text)
+    if (normalizedText.contains("si")) Some(true) else if (normalizedText.contains("na")) Some(false) else None
+  }
 
   def parseEmail(email: String): Option[String] = {
     "\\w\\S+[@]\\w+[.]\\w+".r findFirstMatchIn email match {
@@ -75,8 +80,20 @@ object ItemParser extends Common {
     Timestamp.valueOf(date.atStartOfDay)
   }
 
-  def inferHabitationTypeFromRawCategory(normalizedRawCategory: Option[String]): Option[String] = {
+  // TODO: Use Levenshtein distance algorithm with synonymous
+
+  def inferHabitationTypeFromRawNormalizedText(normalizedRawText: String): Option[String] = {
     val habitationTypes = Map("apart" -> HabitationEnum.Apartment, "cas" -> HabitationEnum.Home, "kit" -> HabitationEnum.Kitnet)
-    normalizedRawCategory.flatMap(parseStringByPrimitive(_, habitationTypes))
+    parseStringByPrimitive(normalizedRawText, habitationTypes)
+  }
+
+  def inferNegotiatorTypeFromRawNormalizedText(normalizedRawText: String): Option[String] = {
+    val negotiatorType = Map("don" -> NegotiatorEnum.Owner, "proprietari" -> NegotiatorEnum.Owner, "imobiliari" -> NegotiatorEnum.RealState)
+    parseStringByPrimitive(normalizedRawText, negotiatorType)
+  }
+
+  def inferContractTypeFromRawNormalizedText(normalizedRawText: String): Option[String] = {
+    val contractType = Map("alug" -> ContractEnum.Rent)
+    parseStringByPrimitive(normalizedRawText, contractType)
   }
 }

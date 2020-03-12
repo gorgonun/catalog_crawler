@@ -31,10 +31,10 @@ object UFSCParser extends Crawler {
       val ri = RawItem(
         id = getIdFromLink(link).get,
         category = Some(normalize(items.get(0).text)),
-        title = items.get(1).attr("title"),
+        title = normalize(items.get(1).child(0).attr("title")),
         link = link,
         postDate = items.get(2).text)
-      if(ri.category.isEmpty || ri.title.isEmpty || ri.link.isEmpty || ri.postDate.isEmpty) throw new Exception("") else ri
+      if(ri.category.isEmpty || ri.title.isEmpty || ri.link.isEmpty || ri.postDate.isEmpty) throw new RuntimeException("Parser failed") else ri
     }
   }
 

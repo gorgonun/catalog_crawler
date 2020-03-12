@@ -2,19 +2,15 @@ package catalog.pojos
 
 import java.sql.Timestamp
 
-import catalog.pojos.ContractEnum.ContractEnum
-import catalog.pojos.NegotiatorEnum.NegotiatorEnum
-
 case class CompleteItem(id: Int,
-                        category: String, // TODO: Remove category and replace with habitation + negotiator + contractType
-                        date: Timestamp,
+                        categories: List[Option[String]], // TODO: Remove category and replace with habitation + negotiator + contractType
+                        postDate: Timestamp,
                         title: String,
                         link: String,
-                        image: String,
+                        images: Option[Array[String]] = None,
                         description: Option[String] = None,
-                        seller: Option[String] = None,
+                        sellerName: Option[String] = None,
                         expiration: Option[Timestamp] = None,
-                        postDate: Option[Timestamp] = None,
                         email: Option[String] = None,
                         price: Option[Int] = None,
                         street: Option[String] = None,
@@ -35,20 +31,7 @@ case class CompleteItem(id: Int,
                         stove: Option[Boolean] = None,
                         fridge: Option[Boolean] = None,
                         habitation: Option[HabitationEnum.Value] = None,
-                        negotiator: Option[NegotiatorEnum] = None,
-                        contractType: Option[ContractEnum] = None,
+                        negotiator: Option[NegotiatorEnum.Value] = None,
+                        contractType: Option[ContractEnum.Value] = None,
                         active: Boolean = true,
                         furnished: Option[Boolean] = None)
-
-object NegotiatorEnum extends Enumeration {
-  type NegotiatorEnum = Value
-
-  val Owner: Value = Value("dono")
-  val RealState: Value = Value("imobiliária")
-}
-
-object ContractEnum extends Enumeration {
-  type ContractEnum = Value
-
-  val Rent: Value = Value("aluguel")
-}

@@ -28,7 +28,7 @@ trait Converters {
   def convert(rawZI: RawZI): RawItem = {
     RawItem(
       id = parseInt(rawZI.id).get,
-      category = Some(s"${rawZI.pricinginfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}"),
+      category = Some(normalize(s"${rawZI.pricinginfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}")),
       title = rawZI.title,
       link = rawZI.link.get.href,
       description = Some(rawZI.description),

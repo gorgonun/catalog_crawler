@@ -3,7 +3,7 @@ package catalog.parsers
 import java.sql.Timestamp
 import java.time.LocalDate
 
-import catalog.pojos.{CompleteItem, HabitationEnum, RawItem}
+import catalog.pojos.{CompleteItem, ContractEnum, HabitationEnum, RawItem}
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.util.Success
@@ -13,7 +13,7 @@ class ItemParserSpec extends FunSpec with Matchers {
   it("should infer habitation type from category") {
     val categories = Seq("aluga_se_casa", "casa_para_", "tenho_uma_casinha_na", "um_apartamento", "novo_apart_", "kitnet_na", "", "jose")
     val expected = Seq(HabitationEnum.Home, HabitationEnum.Home, HabitationEnum.Home, HabitationEnum.Apartment, HabitationEnum.Apartment, HabitationEnum.Kitnet)
-    categories.flatMap(c => ItemParser.inferHabitationTypeFromRawCategory(Some(c))) shouldBe expected
+    categories.flatMap(c => ItemParser.inferHabitationTypeFromRawNormalizedText(c)) shouldBe expected
   }
 
   it("should convert text to valid boolean") {
@@ -52,40 +52,38 @@ class ItemParserSpec extends FunSpec with Matchers {
 
   it("should convert rawitems in completeitems") {
     val rawItem = RawItem(
-      184761,
-      "08/01/2020",
-      "Alugo quarto em apartamento no Centro, com óti...",
-      "https://classificados.inf.ufsc.br/detail.php?id=184761",
-      Some("ofertas_de_quartos_vagas_centro"),
-      None,
-      Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
-      Some("Isabela Amorim de Oliveira"),
-      Some("23/01/2020 (em 13 dias)"),
-      Some("08/01/2020"),
-      Some("Contatar Vendedor"),
-      Some("790"),
-      Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
-      Some("Centro"),
-      Some("Florianópolis"),
-      Some("Feminino"))
+      id = 184761,
+      postDate = "08/01/2020",
+      title = "Alugo quarto em apartamento no Centro, com óti...",
+      link = "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      category = Some("ofertas_de_quartos_vagas_centro"),
+      images = None,
+      description = Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
+      sellerName = Some("Isabela Amorim de Oliveira"),
+      expirationDate = Some("23/01/2020 (em 13 dias)"),
+      sellerEmail = Some("Contatar Vendedor"),
+      price = Some("790"),
+      street = Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
+      neighborhood = Some("Centro"),
+      city = Some("Florianópolis"),
+      gender = Some("Feminino"))
 
     val completeItem = CompleteItem(
-      184761,
-      "ofertas_de_quartos_vagas_centro",
-      Timestamp.valueOf("2020-01-08 00:00:00.0"),
-      "Alugo quarto em apartamento no Centro, com óti...",
-      "https://classificados.inf.ufsc.br/detail.php?id=184761",
-      "layout_images/new/noimg.gif",
-      Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
-      Some("Isabela Amorim de Oliveira"),
-      Some(Timestamp.valueOf("2020-01-23 00:00:00.0")),
-      Some(Timestamp.valueOf("2020-01-08 00:00:00.0")),
-      None,
-      Some(790),
-      Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
-      Some("Centro"),
-      Some("Florianópolis"),
-      Some("F"))
+      id = 184761,
+      categories = List(Some(HabitationEnum.Apartment.toString), None, Some(ContractEnum.Rent.toString)),
+      postDate = Timestamp.valueOf("2020-01-08 00:00:00.0"),
+      title = "Alugo quarto em apartamento no Centro, com óti...",
+      link = "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      description = Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
+      sellerName = Some("Isabela Amorim de Oliveira"),
+      expiration = Some(Timestamp.valueOf("2020-01-23 00:00:00.0")),
+      price = Some(790),
+      street = Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
+      neighborhood = Some("Centro"),
+      city = Some("Florianópolis"),
+      habitation = Some("apartamento"),
+      contractType = Some("aluguel"),
+      gender = Some("F"))
 
     ItemParser.parse(rawItem) shouldBe completeItem
   }

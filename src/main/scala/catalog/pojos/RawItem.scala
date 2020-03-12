@@ -6,7 +6,7 @@ case class RawItem(id: Int,
                    link: String,
                    category: Option[String] = None,
                    images: Option[Array[String]] = None,
-                   description: Option[String] = None,
+                   description: Option[String] = None, // TODO: Spark NLP?
                    expirationDate: Option[String] = None,
                    price: Option[String] = None,
                    street: Option[String] = None,
