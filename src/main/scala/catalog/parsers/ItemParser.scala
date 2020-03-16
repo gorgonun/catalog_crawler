@@ -41,12 +41,11 @@ object ItemParser extends Common {
       laundry = rawItem.laundry.flatMap(textToBoolean),
       internet = rawItem.internetIncluded.flatMap(textToBoolean),
       animals = rawItem.animalsAllowed.flatMap(textToBoolean),
-      habitation = inferHabitationTypeFromRawNormalizedText(rawItem.category.getOrElse("")).orElse(inferHabitationTypeFromRawNormalizedText(normalize(rawItem.description.getOrElse("")))),
-      negotiator = inferNegotiatorTypeFromRawNormalizedText(rawItem.category.getOrElse("")).orElse(inferNegotiatorTypeFromRawNormalizedText(normalize(rawItem.description.getOrElse("")))),
-      contractType = inferContractTypeFromRawNormalizedText(rawItem.category.getOrElse("")).orElse(inferContractTypeFromRawNormalizedText(normalize(rawItem.description.getOrElse(""))))
+      habitation = inferFromList(Seq(rawItem.category.getOrElse(""), normalize(rawItem.description.getOrElse("")), normalize(rawItem.title)), inferHabitationTypeFromRawNormalizedText),
+      negotiator = inferFromList(Seq(rawItem.category.getOrElse(""), normalize(rawItem.description.getOrElse("")), normalize(rawItem.title)), inferNegotiatorTypeFromRawNormalizedText),
+      contractType = inferFromList(Seq(rawItem.category.getOrElse(""), normalize(rawItem.description.getOrElse("")), normalize(rawItem.title)), inferContractTypeFromRawNormalizedText)
     )
-    ciTemp
-//    ciTemp.copy(categories = List(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).flatMap(a => _.toString))
+    ciTemp.copy(categories = List(ciTemp.habitation.map(_.toString), ciTemp.negotiator.map(_.toString), ciTemp.contractType.map(_.toString)))
   }
 
   def textToBoolean(text: String): Option[Boolean] = {
@@ -95,5 +94,9 @@ object ItemParser extends Common {
   def inferContractTypeFromRawNormalizedText(normalizedRawText: String): Option[String] = {
     val contractType = Map("alug" -> ContractEnum.Rent)
     parseStringByPrimitive(normalizedRawText, contractType)
+  }
+
+  def inferFromList(targets: Seq[String], inferFunction: String => Option[String]): Option[String] = {
+    targets.map(inferFunction).flatten.headOption
   }
 }

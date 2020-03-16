@@ -51,7 +51,7 @@ object UFSCParser extends Crawler {
     .toMap
 
     val category = incompleteRawItem.category match {
-      case Some(r) => Some(r + "_" + mp.getOrElse("complemento", ""))
+      case Some(r) => Some(r + "_" + mp.getOrElse("complemento", "")).map(_.replaceAll("[_]*$", ""))
       case _ => mp.get("complemento")
     }
 

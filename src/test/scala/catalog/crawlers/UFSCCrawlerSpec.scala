@@ -66,9 +66,10 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
 
     val expected = Success(RawItem(
       184761,
-      "ofertas_de_quartos_vagas_centro",
       "08/01/2020",
-      "https://classificados.inf.ufsc.br/detail.php?id=184761"))
+      "alugo_quarto_em_apartamento_no_centro_com_otima_localizacao_ao_lado_do_shopping_beira_mar",
+      "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      Some("ofertas_de_quartos_vagas_centro")))
 
     UFSCParser.parse(rawItem) shouldBe expected
   }
@@ -76,7 +77,7 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
   it("should fail if a necessary field is not found") {
     val rawFile = Source.fromResource("UFSCCrawlerSpec/raw_item.html")
     val rawItem = Jsoup.parse(rawFile.getLines.mkString).selectFirst("table").select("tr td")
-    rawItem.get(0).text("")
+    rawItem.get(2).text("")
 
     UFSCParser.parse(rawItem).isFailure shouldBe true
   }
@@ -91,22 +92,20 @@ class UFSCCrawlerSpec extends FunSpec with Matchers {
     rawFile.close()
 
     val expected = RawItem(
-      184761,
-      "ofertas_de_quartos_vagas_centro",
-      "08/01/2020",
-      "https://classificados.inf.ufsc.br/detail.php?id=184761",
-      Some("Alugo quarto em apartamento no Centro, com óti..."),
-      None,
-      Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
-      Some("Isabela Amorim de Oliveira"),
-      Some("23/01/2020 (em 13 dias)"),
-      Some("08/01/2020"),
-      Some("Contatar Vendedor"),
-      Some("790"),
-      Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
-      Some("Centro"),
-      Some("Florianópolis"),
-      Some("Feminino"))
+      id = 184761,
+      postDate = "08/01/2020",
+      title = "alugo_quarto_em_apartamento_no_centro_com_otima_localizacao_ao_lado_do_shopping_beira_mar",
+      link = "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      category = Some("ofertas_de_quartos_vagas_centro"),
+      description = Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),
+      expirationDate = Some("23/01/2020 (em 13 dias)"),
+      price = Some("790"),
+      street = Some("Rua Maestro Tullo Cavalazzi nº 80, apto 203 - Centro"),
+      neighborhood = Some("Centro"),
+      city = Some("Florianópolis"),
+      gender = Some("Feminino"),
+      sellerName = Some("Isabela Amorim de Oliveira"),
+      sellerEmail = Some("Contatar Vendedor"))
 
     UFSCParser.getCompleteInfo(infoPage, rawItem.get) shouldBe expected
   }

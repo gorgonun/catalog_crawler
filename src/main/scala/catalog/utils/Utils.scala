@@ -2,7 +2,6 @@ package catalog.utils
 
 import java.text.Normalizer
 import java.util.regex.Pattern
-import scala.util.matching.Regex
 
 import org.slf4j.{Logger, LoggerFactory}
 
