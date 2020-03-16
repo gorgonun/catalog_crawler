@@ -1,7 +1,7 @@
 package catalog.parsers
 
 import catalog.crawlers.Crawler
-import catalog.pojos.{CompleteItem, HabitationEnum, RawItem}
+import catalog.pojos.RawItem
 import catalog.utils.Utils.{normalize, parseInt}
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.jsoup.nodes.Document

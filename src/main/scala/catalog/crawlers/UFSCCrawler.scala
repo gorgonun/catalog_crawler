@@ -2,14 +2,10 @@ package catalog.crawlers
 
 import java.time.LocalDate
 
-import catalog.pojos._
-import catalog.utils.Utils._
-import org.apache.spark.sql.{Dataset, SparkSession}
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
 import scala.collection.JavaConverters._
-import scala.util.Try
 
 object UFSCCrawler extends Crawler {
 
