@@ -1,6 +1,5 @@
-package catalog.crawlers
+package catalog.parsers
 
-import catalog.parsers.UFSCParser
 import catalog.pojos.RawItem
 import org.jsoup.Jsoup
 import org.scalatest.{FunSpec, Matchers}

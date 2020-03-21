@@ -1,0 +1,13 @@
+{
+  "hits": {
+    "hit": [
+      {
+        "fields": {
+          "bairro": "test_neighborhood",
+          "cidade": "gotham"
+        }
+
+      }
+    ]
+  }
+}
