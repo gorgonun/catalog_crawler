@@ -28,14 +28,14 @@ trait Converters {
   def convert(rawZI: RawZI): RawItem = {
     RawItem(
       id = parseInt(rawZI.id).get,
-      category = Some(normalize(s"${rawZI.pricinginfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}")),
+      category = Some(normalize(s"${rawZI.pricingInfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}")),
       title = rawZI.title,
       link = rawZI.link.get.href,
       description = Some(rawZI.description),
       sellerName = Some(rawZI.account.get.name),
       postDate = rawZI.createdAt,
       sellerEmail = rawZI.account.get.emails.get("primary"),
-      price = Some(rawZI.pricinginfos.head.price),
+      price = Some(rawZI.pricingInfos.head.price),
       street = Some(rawZI.address.street),
       neighborhood = Some(rawZI.address.neighborhood),
       city = Some(rawZI.address.city),
@@ -43,12 +43,12 @@ trait Converters {
       laundry = None, // FIXME: find key to laundry confirmation
       internetIncluded = Some("nao"),
       animalsAllowed = None, // FIXME: find key to animals confirmation
-      rentPrice = Some(rawZI.pricinginfos.head.price),
+      rentPrice = Some(rawZI.pricingInfos.head.price),
       stove = None, // FIXME: find key to animals confirmation
       fridge = None, // FIXME: find key to animals confirmation
       habitationType = Some(rawZI.unitTypes.head),
       negotiatorType = Some(rawZI.contractType),
-      contractType = Some(rawZI.pricinginfos.head.businessType),
+      contractType = Some(rawZI.pricingInfos.head.businessType),
       active = Some(rawZI.status),
       furnished = rawZI.amenities.find(_ == "FURNISHED")
     )
