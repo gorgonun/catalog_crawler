@@ -3,6 +3,7 @@ package catalog.parsers
 import catalog.pojos.{AccountZI, LinkZI, MediaZI, RawZI}
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.json4s.{DefaultFormats, JArray, JValue}
+import org.json4s.jackson.Serialization.write
 
 object ZIParser {
   def parse(json: JValue)(implicit spark: SparkSession): Dataset[RawZI] = {
@@ -22,7 +23,8 @@ object ZIParser {
           .copy(
             account = (l \ "account").extract[Option[AccountZI]],
             medias = (l \ "medias").extract[Option[List[MediaZI]]],
-            link = (l \ "link").extract[Option[LinkZI]])
+            link = (l \ "link").extract[Option[LinkZI]],
+            originalSource = Some(write(json)))
         })
       .getOrElse(List.empty)
   }

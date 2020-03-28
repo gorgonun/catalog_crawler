@@ -1,0 +1,15 @@
+[
+  {
+    "banheiros": "5",
+    "quartos": "4",
+    "iptu": "77",
+    "andar": "5",
+    "originalSource": "{\"hits\":{\"hit\":[{\"fields\":{\"banheiros\":\"5\",\"quartos\":\"4\",\"iptu\":\"77\",\"andar\":\"5\"}},{\"fields\":{\"for_rent\":\"sim\",\"local\":\"4\",\"suites\":\"77\"}}]}}"
+  },
+  {
+    "for_rent": "sim",
+    "local": "4",
+    "suites": "77",
+    "originalSource": "{\"hits\":{\"hit\":[{\"fields\":{\"banheiros\":\"5\",\"quartos\":\"4\",\"iptu\":\"77\",\"andar\":\"5\"}},{\"fields\":{\"for_rent\":\"sim\",\"local\":\"4\",\"suites\":\"77\"}}]}}"
+  }
+]

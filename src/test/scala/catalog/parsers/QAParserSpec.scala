@@ -1,25 +1,30 @@
 package catalog.parsers
 
-import catalog.pojos.RawQA
+import org.json4s.{DefaultFormats, JValue}
 import org.scalatest.{FunSpec, Matchers}
 import org.json4s.native.JsonMethods._
+import org.json4s.jackson.Serialization.write
 
 import scala.io.Source
 
 class QAParserSpec extends FunSpec with Matchers {
+  implicit val formats: DefaultFormats.type = DefaultFormats
+
+  def parseJsonFileFromResource(filename: String): JValue =
+    parse(Source.fromResource(filename).getLines.mkString)
+
   it("should parse one api item"){
-    val rawFile = Source.fromResource("QAParserSpec/api_item.json")
-    val jsonFile = parse(rawFile.getLines.mkString)
-    QAParser.parseJson(jsonFile).head shouldBe RawQA(bairro = Some("test_neighborhood"), cidade = Some("gotham"))
+    val jsonFile = parseJsonFileFromResource("QAParserSpec/api_item.json")
+    val jsonResult = parseJsonFileFromResource("QAParserSpec/api_result.json")
+
+    write(QAParser.parseJson(jsonFile).head) shouldBe write(jsonResult)
   }
 
   it("should parse multiple api items"){
-    val rawFile = Source.fromResource("QAParserSpec/api_items.json")
-    val jsonFile = parse(rawFile.getLines.mkString)
-    QAParser.parseJson(jsonFile) shouldBe List(
-      RawQA(banheiros = Some("5"), quartos = Some("4"), iptu = Some("77"), andar = Some("5")),
-      RawQA(for_rent = Some("sim"), local = Some("4"), suites = Some("77"))
-    )
+    val jsonFile = parseJsonFileFromResource("QAParserSpec/api_items.json")
+    val jsonResult = parseJsonFileFromResource("QAParserSpec/api_results.json")
+
+    write(QAParser.parseJson(jsonFile)) shouldBe write(jsonResult)
   }
 
   it("ignores invalid qa items"){

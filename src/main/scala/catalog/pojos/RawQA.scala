@@ -30,4 +30,5 @@ case class RawQA(banheiros: Option[String] = None,
                  condo_iptu: Option[String] = None,
                  vagas: Option[String] = None,
                  area: Option[String] = None,
-                 id: Option[String] = None)
+                 id: Option[String] = None,
+                 originalSource: Option[String])

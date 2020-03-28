@@ -1,0 +1,5 @@
+{
+  "bairro": "test_neighborhood",
+  "cidade": "gotham",
+  "originalSource": "{\"hits\":{\"hit\":[{\"fields\":{\"bairro\":\"test_neighborhood\",\"cidade\":\"gotham\"}}]}}"
+}

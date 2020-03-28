@@ -4,6 +4,8 @@ case class RawItem(id: Int,
                    postDate: String,
                    title: String,
                    link: String,
+                   entity: String,
+                   originalSource: String,
                    category: Option[String] = None,
                    images: Option[Array[String]] = None,
                    description: Option[String] = None, // TODO: Spark NLP?

@@ -50,12 +50,14 @@ class ItemParserSpec extends FunSpec with Matchers {
     ItemParser.parseDate(invalidDate).isFailure shouldBe true
   }
 
-  it("should convert rawitems in completeitems") {
+  it("should convert rawitems to completeitems") {
     val rawItem = RawItem(
       id = 184761,
       postDate = "08/01/2020",
       title = "Alugo quarto em apartamento no Centro, com óti...",
       link = "https://classificados.inf.ufsc.br/detail.php?id=184761",
+      entity = "ufsc",
+      originalSource = "",
       category = Some("ofertas_de_quartos_vagas_centro"),
       images = None,
       description = Some("Procuramos uma menina tranquila para convivência, que trabalhe/estude, sem vícios, responsável financeiramente e com as tarefas domésticas. O apartamento é todo mobiliado, o quarto não. O apartamento é compartilhado com mais 2 pessoas e possui vaga de garagem aberta. Valor em torno de R$790,00 com aluguel, luz, água, condomínio e internet. Contato falar com Adriana Telefone (48) 9 9991- 3136"),

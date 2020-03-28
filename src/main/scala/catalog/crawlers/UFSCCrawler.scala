@@ -9,7 +9,7 @@ import scala.collection.JavaConverters._
 
 object UFSCCrawler extends Crawler {
 
-  def start(startDate: Option[LocalDate] = None, endDate: Option[LocalDate] = None): Stream[Elements] = {
+  def crawl(startDate: Option[LocalDate] = None, endDate: Option[LocalDate] = None): Stream[Elements] = {
     val url = "https://classificados.inf.ufsc.br/latestads.php?offset="
     val sleep = 2000
 

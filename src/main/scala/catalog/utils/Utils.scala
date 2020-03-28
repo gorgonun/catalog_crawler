@@ -29,6 +29,8 @@ object Utils {
     }
   }
 
+  def parseInt(price: Option[String]): Option[Int] = price.flatMap(parseInt)
+
   def parseStringByPrimitive(str: String, primitiveMap: Map[String, String]): Option[String] = {
     primitiveMap
       .keys

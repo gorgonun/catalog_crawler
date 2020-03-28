@@ -20,4 +20,9 @@ class UtilsSpec extends FunSpec with Matchers {
     Utils.parseInt(validPrice3) shouldBe Some(555)
     Utils.parseInt(invalidPrice) shouldBe None
   }
+
+  it("parses str option to int option") {
+    Utils.parseInt(Some("300")) shouldBe Some(300)
+    Utils.parseInt(None) shouldBe None
+  }
 }

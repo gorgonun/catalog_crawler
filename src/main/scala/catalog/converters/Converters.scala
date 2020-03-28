@@ -10,9 +10,11 @@ trait Converters {
       category = Some(normalize(rawQA.tipo.getOrElse("") + " para alugar direto com proprietario")), // FIXME: handle camelCase as separated strings
       title = normalize(rawQA.tipo.getOrElse("") + " " + rawQA.endereco.getOrElse("")),
       link = "https://www.quintoandar.com.br/imovel/" + rawQA.id.get,
+      entity = "qa",
+      originalSource = rawQA.originalSource.get,
       description = Some("descrição no link"), // TODO: Crawl the comment link
       postDate = rawQA.first_publication.get,
-      price = Some((parseInt(rawQA.aluguel_condominio.getOrElse("0")).getOrElse(0) + parseInt(rawQA.home_insurance.getOrElse("0")).getOrElse(0)).toString),
+      price = (parseInt(rawQA.aluguel_condominio) ++ parseInt(rawQA.home_insurance)).reduceOption(_ + _).map(_.toString),
       street = rawQA.endereco,
       neighborhood = rawQA.bairro,
       city = rawQA.cidade,
@@ -31,6 +33,8 @@ trait Converters {
       category = Some(normalize(s"${rawZI.pricingInfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}")),
       title = rawZI.title,
       link = rawZI.link.get.href,
+      entity = "zi",
+      originalSource = rawZI.originalSource.get,
       description = Some(rawZI.description),
       sellerName = Some(rawZI.account.get.name),
       postDate = rawZI.createdAt,
@@ -56,7 +60,7 @@ trait Converters {
     )
     temp.copy(rentPrice =
       temp.rentPrice.flatMap(i =>
-        (parseInt(i) ++ parseInt(temp.managerFee.getOrElse("0"))).reduceOption(_ + _).map(_.toString)
+        (parseInt(i) ++ parseInt(temp.managerFee)).reduceOption(_ + _).map(_.toString)
       )
     )
   }

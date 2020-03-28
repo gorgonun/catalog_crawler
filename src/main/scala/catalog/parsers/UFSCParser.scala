@@ -33,7 +33,9 @@ object UFSCParser extends Crawler {
         category = Some(normalize(items.get(0).text)),
         title = normalize(items.get(1).child(0).attr("title")),
         link = link,
-        postDate = items.get(2).text)
+        postDate = items.get(2).text,
+        entity = "ufsc",
+        originalSource = "")
       if(ri.category.isEmpty || ri.title.isEmpty || ri.link.isEmpty || ri.postDate.isEmpty) throw new RuntimeException("Parser failed") else ri
     }
   }
@@ -57,6 +59,7 @@ object UFSCParser extends Crawler {
 
     incompleteRawItem.copy(
       category = category,
+      originalSource = doc.toString,
       description = Option(description),
       sellerName = mp.get("vendido_por"),
       sellerEmail = mp.get("email"),
