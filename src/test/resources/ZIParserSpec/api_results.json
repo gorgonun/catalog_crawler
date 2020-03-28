@@ -1,0 +1,95 @@
+[
+  {
+    "createdAt": "2020-01-24T01:15:49.430Z",
+    "id": "1235",
+    "contractType": "REAL_ESTATE",
+    "unitTypes": [
+      "HOME"
+    ],
+    "suites": [
+      "1"
+    ],
+    "bathrooms": [
+      "4"
+    ],
+    "bedrooms": [
+      "9"
+    ],
+    "pricingInfos": [
+      {
+        "rentalInfo": {
+          "period": "MONTHLY",
+          "warranties": [],
+          "monthlyRentalTotalPrice": "1234"
+        },
+        "yearlyIptu": "867",
+        "price": "1234",
+        "businessType": "RENTAL",
+        "monthlyCondoFee": "1000"
+      }
+    ],
+    "status": "ACTIVE",
+    "description": "test description 2",
+    "title": "blablabla",
+    "amenities": [],
+    "address": {
+      "zipCode": "123456",
+      "city": "Florianópolis",
+      "geopoint": "",
+      "street": "Rua Maria Antonia",
+      "state": "Santa Catarina",
+      "neighborhood": "Trindade"
+    },
+    "medias": [
+      {
+        "url": "https://video.com.br/l.mp4",
+        "type": "VIDEO"
+      }
+    ],
+    "link": {
+      "href": "/imovel/aluguel-casa-trindade-florianopolis-sc-666m2-id-1235/"
+    }
+  },
+  {
+    "createdAt": "2020-02-24T01:15:39.430Z",
+    "id": "1234",
+    "contractType": "REAL_ESTATE",
+    "unitTypes": [
+      "HOME"
+    ],
+    "suites": [
+      "1"
+    ],
+    "bathrooms": [
+      "2"
+    ],
+    "bedrooms": [
+      "1"
+    ],
+    "pricingInfos": [
+      {
+        "rentalInfo": {
+          "period": "MONTHLY",
+          "warranties": [],
+          "monthlyRentalTotalPrice": "1245"
+        },
+        "yearlyIptu": "1200",
+        "price": "1245",
+        "businessType": "RENTAL",
+        "monthlyCondoFee": "0"
+      }
+    ],
+    "status": "ACTIVE",
+    "description": "test description 3",
+    "title": "blablablabla",
+    "amenities": [],
+    "address": {
+      "zipCode": "1234",
+      "city": "Florianópolis",
+      "geopoint": "",
+      "street": "Rua Jose",
+      "state": "Santa Catarina",
+      "neighborhood": "Pantanal"
+    }
+  }
+]

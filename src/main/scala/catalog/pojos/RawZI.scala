@@ -15,4 +15,4 @@ case class RawZI(createdAt: String,
                  address: AddressZI,
                  account: Option[AccountZI],
                  medias: Option[List[MediaZI]],
-                 link: Option[LinkZI])
+                 link: Option[LinkZI]) // FIXME: Add raw source to save all data

@@ -26,7 +26,7 @@ trait Converters {
   }
 
   def convert(rawZI: RawZI): RawItem = {
-    RawItem(
+    val temp = RawItem(
       id = parseInt(rawZI.id).get,
       category = Some(normalize(s"${rawZI.pricingInfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}")),
       title = rawZI.title,
@@ -44,6 +44,8 @@ trait Converters {
       internetIncluded = Some("nao"),
       animalsAllowed = None, // FIXME: find key to animals confirmation
       rentPrice = Some(rawZI.pricingInfos.head.price),
+      IPTUPrice = Some(rawZI.pricingInfos.head.yearlyIptu),
+      managerFee = Some(rawZI.pricingInfos.head.monthlyCondoFee),
       stove = None, // FIXME: find key to animals confirmation
       fridge = None, // FIXME: find key to animals confirmation
       habitationType = Some(rawZI.unitTypes.head),
@@ -51,6 +53,11 @@ trait Converters {
       contractType = Some(rawZI.pricingInfos.head.businessType),
       active = Some(rawZI.status),
       furnished = rawZI.amenities.find(_ == "FURNISHED")
+    )
+    temp.copy(rentPrice =
+      temp.rentPrice.flatMap(i =>
+        (parseInt(i) ++ parseInt(temp.managerFee.getOrElse("0"))).reduceOption(_ + _).map(_.toString)
+      )
     )
   }
 }
