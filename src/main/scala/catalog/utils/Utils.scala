@@ -1,8 +1,13 @@
 package catalog.utils
 
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.text.Normalizer
 import java.util.regex.Pattern
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
+import com.google.common.base.Charsets
+import com.google.common.io.BaseEncoding
+import org.apache.commons.io.IOUtils
 import org.slf4j.{Logger, LoggerFactory}
 
 trait Common {
@@ -43,5 +48,20 @@ object Utils {
       .keys
       .flatMap(_.r findFirstIn str)
       .headOption
+  }
+
+  def toB64Compressed(text: String): String = {
+    val bos = new ByteArrayOutputStream()
+    val gzs = new GZIPOutputStream(bos)
+    gzs.write(text.getBytes(Charsets.UTF_8))
+    gzs.close()
+    val b64String = BaseEncoding.base64().encode(bos.toByteArray)
+    b64String
+  }
+
+  def decodeString(text: String): String = {
+    val bytes = BaseEncoding.base64().decode(text)
+    val zipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))
+    IOUtils.toString(zipInputStream)
   }
 }

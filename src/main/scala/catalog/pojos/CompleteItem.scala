@@ -2,7 +2,7 @@ package catalog.pojos
 
 import java.sql.Timestamp
 
-case class CompleteItem(id: Int,
+case class CompleteItem(id: String,
                         categories: List[Option[String]], // TODO: Remove category and replace with habitation + negotiator + contractType
                         postDate: Timestamp,
                         title: String,

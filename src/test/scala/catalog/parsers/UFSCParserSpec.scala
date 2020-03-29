@@ -32,7 +32,7 @@ class UFSCParserSpec extends FunSpec with Matchers {
 
   it("should get id from link") {
     val link = "https://classificados.inf.ufsc.br/detail.php?id=8184761"
-    UFSCParser.getIdFromLink(link) shouldBe Some(8184761)
+    UFSCParser.getIdFromLink(link) shouldBe "8184761"
   }
 
   it("should complete rawitem with the complete info") {

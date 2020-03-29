@@ -6,6 +6,7 @@ import org.json4s.{DefaultFormats, JArray, JValue}
 import org.json4s.jackson.Serialization.write
 
 object ZIParser {
+
   def parse(json: JValue)(implicit spark: SparkSession): Dataset[RawZI] = {
     import spark.implicits._
 

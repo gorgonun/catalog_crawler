@@ -19,6 +19,8 @@ libraryDependencies ++= Seq(
 
   "org.scalactic" %% "scalactic" % "3.0.8",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+
+  "com.google.guava" % "guava" % "23.0"
 )
 
 enablePlugins(JavaAppPackaging)

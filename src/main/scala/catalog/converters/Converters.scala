@@ -1,17 +1,17 @@
 package catalog.converters
 
 import catalog.pojos.{RawItem, RawQA, RawZI}
-import catalog.utils.Utils.{normalize, parseInt}
+import catalog.utils.Utils.{normalize, parseInt, toB64Compressed}
 
 trait Converters {
   def convert(rawQA: RawQA): RawItem = {
     RawItem(
-      id = parseInt(rawQA.id.get).get,
+      id = rawQA.id.get,
       category = Some(normalize(rawQA.tipo.getOrElse("") + " para alugar direto com proprietario")), // FIXME: handle camelCase as separated strings
       title = normalize(rawQA.tipo.getOrElse("") + " " + rawQA.endereco.getOrElse("")),
       link = "https://www.quintoandar.com.br/imovel/" + rawQA.id.get,
       entity = "qa",
-      originalSource = rawQA.originalSource.get,
+      originalSource = toB64Compressed(rawQA.originalSource.get),
       description = Some("descrição no link"), // TODO: Crawl the comment link
       postDate = rawQA.first_publication.get,
       price = (parseInt(rawQA.aluguel_condominio) ++ parseInt(rawQA.home_insurance)).reduceOption(_ + _).map(_.toString),
@@ -29,18 +29,18 @@ trait Converters {
 
   def convert(rawZI: RawZI): RawItem = {
     val temp = RawItem(
-      id = parseInt(rawZI.id).get,
+      id = rawZI.id,
       category = Some(normalize(s"${rawZI.pricingInfos.head.businessType}_${rawZI.contractType}_${rawZI.unitTypes.head}")),
       title = rawZI.title,
       link = rawZI.link.get.href,
       entity = "zi",
-      originalSource = rawZI.originalSource.get,
+      originalSource = toB64Compressed(rawZI.originalSource.get),
       description = Some(rawZI.description),
       sellerName = Some(rawZI.account.get.name),
       postDate = rawZI.createdAt,
       sellerEmail = rawZI.account.get.emails.get("primary"),
       price = Some(rawZI.pricingInfos.head.price),
-      street = Some(rawZI.address.street),
+      street = rawZI.address.street,
       neighborhood = Some(rawZI.address.neighborhood),
       city = Some(rawZI.address.city),
       contract = Some("sim"),
@@ -48,8 +48,8 @@ trait Converters {
       internetIncluded = Some("nao"),
       animalsAllowed = None, // FIXME: find key to animals confirmation
       rentPrice = Some(rawZI.pricingInfos.head.price),
-      IPTUPrice = Some(rawZI.pricingInfos.head.yearlyIptu),
-      managerFee = Some(rawZI.pricingInfos.head.monthlyCondoFee),
+      IPTUPrice = rawZI.pricingInfos.head.yearlyIptu,
+      managerFee = rawZI.pricingInfos.head.monthlyCondoFee,
       stove = None, // FIXME: find key to animals confirmation
       fridge = None, // FIXME: find key to animals confirmation
       habitationType = Some(rawZI.unitTypes.head),

@@ -1,7 +1,7 @@
 package catalog.pojos
 
 case class PricingInfoZI(rentalInfo: RentalInfoZI,
-                         yearlyIptu: String,
+                         yearlyIptu: Option[String],
                          price: String,
                          businessType: String,
-                         monthlyCondoFee: String)
+                         monthlyCondoFee: Option[String])

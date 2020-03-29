@@ -34,7 +34,6 @@
   "address": {
     "zipCode": "12345",
     "city": "Florianópolis",
-    "geopoint": "",
     "street": "Rua Maria",
     "state": "Santa Catarina",
     "neighborhood": "Centro"

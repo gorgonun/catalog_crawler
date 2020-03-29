@@ -2,7 +2,7 @@ package catalog.parsers
 
 import catalog.crawlers.Crawler
 import catalog.pojos.RawItem
-import catalog.utils.Utils.{normalize, parseInt}
+import catalog.utils.Utils.{normalize, toB64Compressed}
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -23,13 +23,13 @@ object UFSCParser extends Crawler {
         .map(ri => getCompleteInfo(page(ri.link), ri)))
   }
 
-  def getIdFromLink(link: String): Option[Int] = parseInt(link.split("=")(1))
+  def getIdFromLink(link: String): String = link.split("=")(1)
 
   def parse(items: Elements): Try[RawItem] = {
     Try {
       val link = "https://classificados.inf.ufsc.br/" + items.get(1).selectFirst("a").attr("href")
       val ri = RawItem(
-        id = getIdFromLink(link).get,
+        id = getIdFromLink(link),
         category = Some(normalize(items.get(0).text)),
         title = normalize(items.get(1).child(0).attr("title")),
         link = link,
@@ -59,7 +59,7 @@ object UFSCParser extends Crawler {
 
     incompleteRawItem.copy(
       category = category,
-      originalSource = doc.toString,
+      originalSource = toB64Compressed(doc.toString),
       description = Option(description),
       sellerName = mp.get("vendido_por"),
       sellerEmail = mp.get("email"),

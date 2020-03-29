@@ -35,7 +35,6 @@
     "address": {
       "zipCode": "123456",
       "city": "Florianópolis",
-      "geopoint": "",
       "street": "Rua Maria Antonia",
       "state": "Santa Catarina",
       "neighborhood": "Trindade"
@@ -87,7 +86,6 @@
     "address": {
       "zipCode": "1234",
       "city": "Florianópolis",
-      "geopoint": "",
       "street": "Rua Jose",
       "state": "Santa Catarina",
       "neighborhood": "Pantanal"

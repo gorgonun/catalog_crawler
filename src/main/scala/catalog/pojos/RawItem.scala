@@ -1,6 +1,6 @@
 package catalog.pojos
 
-case class RawItem(id: Int,
+case class RawItem(id: String,
                    postDate: String,
                    title: String,
                    link: String,

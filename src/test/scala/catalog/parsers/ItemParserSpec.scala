@@ -52,7 +52,7 @@ class ItemParserSpec extends FunSpec with Matchers {
 
   it("should convert rawitems to completeitems") {
     val rawItem = RawItem(
-      id = 184761,
+      id = "184761",
       postDate = "08/01/2020",
       title = "Alugo quarto em apartamento no Centro, com óti...",
       link = "https://classificados.inf.ufsc.br/detail.php?id=184761",
@@ -71,7 +71,7 @@ class ItemParserSpec extends FunSpec with Matchers {
       gender = Some("Feminino"))
 
     val completeItem = CompleteItem(
-      id = 184761,
+      id = "184761",
       categories = List(Some(HabitationEnum.Apartment.toString), None, Some(ContractEnum.Rent.toString)),
       postDate = Timestamp.valueOf("2020-01-08 00:00:00.0"),
       title = "Alugo quarto em apartamento no Centro, com óti...",
