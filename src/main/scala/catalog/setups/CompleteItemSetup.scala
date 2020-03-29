@@ -8,7 +8,6 @@ import org.apache.spark.sql.{SaveMode, SparkSession}
 import scala.util.Try
 
 object CompleteItemSetup extends Common with Setup {
-
   override val spark: SparkSession = SparkSession
     .builder()
     .master("local")

@@ -7,6 +7,6 @@ run:
 
 deploy:
 	- sbt assembly
-	- docker build --force-rm --build-arg DATABASE_URL=$$DATABASE_URL -t $$REPOSITORY .
-	- `aws ecr get-login --no-include-email --region $$AWS_REGION`
-	- docker push $$REPOSITORY:latest
+	- docker build --force-rm --build-arg DATABASE_URL=$$DATABASE_URL -t test_catalog .
+# 	- `aws ecr get-login --no-include-email --region $$AWS_REGION`
+# 	- docker push $$REPOSITORY:latest

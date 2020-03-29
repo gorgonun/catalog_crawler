@@ -27,7 +27,6 @@ object RawItemSetup extends Common with Converters with Setup {
 
     val ziData = ZICrawler.crawl()
     val ziTable = ZIParser.parse(ziData)(spark).map(convert)
-    ziTable.show()
 
     Try {
       spark.read.jdbc(dbUrl, "rawitems", connectionProperties).as[RawItem]
