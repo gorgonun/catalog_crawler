@@ -7,15 +7,12 @@ import java.time.{LocalDate, ZoneId, ZonedDateTime}
 import fah.pojos._
 import fah.utils.Common
 import fah.utils.Utils._
-import org.apache.spark.sql.{Dataset, SparkSession}
 
 import scala.util.Try
 
 object ItemParser extends Common {
 
-  def parse(rawItems: Dataset[RawItem])(implicit spark: SparkSession): Dataset[CompleteItem] = {
-    import spark.implicits._
-
+  def parse(rawItems: Stream[RawItem]): Stream[CompleteItem] = {
     rawItems.map(parse)
   }
 
@@ -23,7 +20,7 @@ object ItemParser extends Common {
     val inferenceTargets = Seq(rawItem.category.getOrElse(""), normalize(rawItem.description.getOrElse("")))
     val ciTemp = CompleteItem(
       id = rawItem.id,
-      categories = List.empty,
+      categories = Array.empty,
       postDate = localDateAsTimestamp(parseDate(rawItem.postDate).get),
       expiration = rawItem.expirationDate.map(date => localDateAsTimestamp(parseDate(date).get)),
       title = rawItem.title,
@@ -46,7 +43,7 @@ object ItemParser extends Common {
       negotiator = inferFromList(inferenceTargets, inferNegotiatorTypeFromRawNormalizedText),
       contractType = inferFromList(inferenceTargets, inferContractTypeFromRawNormalizedText)
     )
-    ciTemp.copy(categories = List(ciTemp.habitation.map(_.toString), ciTemp.negotiator.map(_.toString), ciTemp.contractType.map(_.toString)))
+    ciTemp.copy(categories = Array(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).map(_.toString))
   }
 
   def textToBoolean(text: String): Option[Boolean] = {
@@ -101,6 +98,6 @@ object ItemParser extends Common {
   }
 
   def inferFromList(targets: Seq[String], inferFunction: String => Option[String]): Option[String] = {
-    targets.map(inferFunction).flatten.headOption
+    targets.flatMap(inferFunction).headOption
   }
 }

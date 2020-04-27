@@ -3,11 +3,11 @@ package fah.pojos
 import java.sql.Timestamp
 
 case class CompleteItem(id: String,
-                        categories: List[Option[String]], // TODO: Remove category and replace with habitation + negotiator + contractType
+                        categories: Array[String], // TODO: Remove category and replace with habitation + negotiator + contractType
                         postDate: Timestamp,
                         title: String,
                         link: String,
-                        images: Option[Array[String]] = None,
+                        images: Array[String] = Array.empty,
                         description: Option[String] = None,
                         sellerName: Option[String] = None,
                         expiration: Option[Timestamp] = None,
