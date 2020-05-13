@@ -14,7 +14,8 @@ object Datasource {
     val completeData: DbData = parseDbData(completeDbUri)
 
     ConnectionPool.singleton(rawData.url, rawData.username, rawData.password)
-    ConnectionPool.add(Symbol("completeitems"), completeData.url, completeData.username, completeData.password, ConnectionPoolSettings(connectionTimeoutMillis = 50 * 1000))
+    ConnectionPool.add(Symbol("rawitems"), rawData.url, rawData.username, rawData.password)
+    ConnectionPool.add(Symbol("completeitems"), completeData.url, completeData.username, completeData.password)
   }
 
   def parseDbData(uri: URI): DbData = {
@@ -23,6 +24,4 @@ object Datasource {
     val dbPassword: String = uri.getUserInfo.split(":")(1)
     DbData(url = dbUrl, username = dbUsername, password = dbPassword)
   }
-
-
 }

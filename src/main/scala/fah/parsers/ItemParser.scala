@@ -12,7 +12,7 @@ import scala.util.Try
 
 object ItemParser extends Common {
 
-  def parse(rawItems: Stream[RawItem]): Stream[CompleteItem] = {
+  def parse(rawItems: LazyList[RawItem]): LazyList[CompleteItem] = {
     rawItems.map(parse)
   }
 
