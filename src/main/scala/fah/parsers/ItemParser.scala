@@ -69,8 +69,8 @@ object ItemParser extends Common {
     val withSecondsDatePattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     val withMillisDatePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     Try {
-      val finalDate = Try(ZonedDateTime.parse(date, DateTimeFormatter.ofPattern(withSecondsDatePattern).withZone(ZoneId.of("America/Sao_Paulo"))).toLocalDate)
-        .orElse(Try(ZonedDateTime.parse(date, DateTimeFormatter.ofPattern(withMillisDatePattern).withZone(ZoneId.of("America/Sao_Paulo"))).toLocalDate))
+      val finalDate = Try(ZonedDateTime.parse(date, DateTimeFormatter.ofPattern(withSecondsDatePattern).withZone(ZoneId.of("UTC"))).toLocalDate)
+        .orElse(Try(ZonedDateTime.parse(date, DateTimeFormatter.ofPattern(withMillisDatePattern).withZone(ZoneId.of("UTC"))).toLocalDate))
       finalDate.getOrElse{
         val dateAsText = date.split("/")
         LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
