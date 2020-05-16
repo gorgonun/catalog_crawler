@@ -8,6 +8,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback"  %  "logback-classic"    % "1.2.3",
   "com.google.guava" % "guava" % "23.0",
   "org.json4s" %% "json4s-native" % "3.6.7",
+  "org.json4s" %% "json4s-jackson" % "3.6.7",
 
   // FIXME: change scalike to doobie
   "org.scalikejdbc" %% "scalikejdbc"       % "3.4.1",

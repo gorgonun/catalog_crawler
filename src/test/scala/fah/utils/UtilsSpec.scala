@@ -10,14 +10,11 @@ class UtilsSpec extends FunSpec with Matchers {
   }
 
   it("should parse decimal to int") {
-    val validPrice1 = "110.0"
-    val validPrice2 = "111"
-    val validPrice3 = "555.55555"
     val invalidPrice = "j"
+    val validPrices = Seq("110.0", "111", "555.55555", "R$1.000.000,00", "R$ 1000", "+-8", "8+")
+    val expected = Seq(Some(1100), Some(111), Some(55555555), Some(1000000), Some(1000), Some(8), Some(8))
 
-    Utils.parseInt(validPrice1) shouldBe Some(110)
-    Utils.parseInt(validPrice2) shouldBe Some(111)
-    Utils.parseInt(validPrice3) shouldBe Some(555)
+    validPrices.map(Utils.parseInt) shouldBe expected
     Utils.parseInt(invalidPrice) shouldBe None
   }
 

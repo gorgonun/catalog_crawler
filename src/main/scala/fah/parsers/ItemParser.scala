@@ -43,7 +43,9 @@ object ItemParser extends Common {
       negotiator = inferFromList(inferenceTargets, inferNegotiatorTypeFromRawNormalizedText),
       contractType = inferFromList(inferenceTargets, inferContractTypeFromRawNormalizedText)
     )
-    ciTemp.copy(categories = Array(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).map(_.toString))
+    ciTemp.copy(categories = Array(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).collect {
+      case Some(s) => s
+    })
   }
 
   def textToBoolean(text: String): Option[Boolean] = {

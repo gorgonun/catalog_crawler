@@ -3,7 +3,7 @@ package fah.parsers
 import java.time.LocalDate
 
 import fah.pojos.{HabitationEnum, RawItem}
-import fah.utils.Utils.decodeString
+import fah.utils.Utils.{decodeString, toB64Compressed}
 import org.json4s.jackson.Serialization.write
 import org.json4s.native.JsonMethods.parse
 import org.json4s.{DefaultFormats, JValue}

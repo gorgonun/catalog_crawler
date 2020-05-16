@@ -27,7 +27,7 @@ object Utils {
   }
 
   def parseInt(price: String): Option[Int] = {
-    val noDecimal = price.split(",").head
+    val noDecimal = price.replace(".", "").split(",").head
     "[\\d]+".r findFirstMatchIn noDecimal match {
       case Some(r) => Some(r.toString.toInt)
       case _ => None
