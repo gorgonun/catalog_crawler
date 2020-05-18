@@ -20,9 +20,9 @@ object ItemParser extends Common {
     val inferenceTargets = Seq(rawItem.category.getOrElse(""), normalize(rawItem.description.getOrElse("")))
     val ciTemp = CompleteItem(
       id = rawItem.id,
-      categories = Array.empty,
-      postDate = localDateAsTimestamp(parseDate(rawItem.postDate).get),
-      expiration = rawItem.expirationDate.map(date => localDateAsTimestamp(parseDate(date).get)),
+      categories = List.empty,
+      postDate = parseDate(rawItem.postDate).get,
+      expiration = rawItem.expirationDate.map(date => parseDate(date).get),
       title = rawItem.title,
       link = rawItem.link,
       images = rawItem.images,
@@ -43,7 +43,7 @@ object ItemParser extends Common {
       negotiator = inferFromList(inferenceTargets, inferNegotiatorTypeFromRawNormalizedText),
       contractType = inferFromList(inferenceTargets, inferContractTypeFromRawNormalizedText)
     )
-    ciTemp.copy(categories = Array(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).collect {
+    ciTemp.copy(categories = List(ciTemp.habitation, ciTemp.negotiator, ciTemp.contractType).collect {
       case Some(s) => s
     })
   }
@@ -76,10 +76,6 @@ object ItemParser extends Common {
         LocalDate.of(dateAsText(2).split(" ").head.toInt, dateAsText(1).toInt, dateAsText.head.toInt)
       }
     }
-  }
-
-  def localDateAsTimestamp(date: LocalDate): Timestamp = {
-    Timestamp.valueOf(date.atStartOfDay)
   }
 
   // TODO: Use Levenshtein distance algorithm with synonymous

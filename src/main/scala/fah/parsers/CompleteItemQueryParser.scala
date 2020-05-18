@@ -7,14 +7,14 @@ object CompleteItemQueryParser {
   def parse(rs: WrappedResultSet): CompleteItem = {
     CompleteItem(
       id = rs.string("id"),
-      categories = rs.array("categories").asInstanceOf[Array[String]],
-      postDate = rs.timestamp("postdate"),
+      categories = rs.array("categories").asInstanceOf[List[String]],
+      postDate = rs.timestamp("postdate").toLocalDateTime.toLocalDate,
       title = rs.string("title"),
       link = rs.string("link"),
-      images = rs.array("images").asInstanceOf[Array[String]],
+      images = rs.array("images").asInstanceOf[List[String]],
       description = rs.stringOpt("description"),
       sellerName = rs.stringOpt("sellerName"),
-      expiration = rs.timestampOpt("expiration"),
+      expiration = rs.timestampOpt("expiration").map(_.toLocalDateTime.toLocalDate),
       email = rs.stringOpt("email"),
       price = rs.intOpt("price"),
       street = rs.stringOpt("street"),

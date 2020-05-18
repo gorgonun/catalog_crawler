@@ -2,12 +2,15 @@ package fah.utils
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.text.Normalizer
+import java.time.LocalDate
 import java.util.regex.Pattern
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
 import org.apache.commons.io.IOUtils
+import org.json4s.CustomSerializer
+import org.json4s.JsonAST.JString
 import org.slf4j.{Logger, LoggerFactory}
 
 trait Common {
@@ -64,4 +67,11 @@ object Utils {
     val zipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))
     IOUtils.toString(zipInputStream)
   }
+
+  object LocalDateSerializer extends CustomSerializer[LocalDate](format => ({
+    case JString(str) =>
+      LocalDate.parse(str)
+  }, {
+    case date: LocalDate => JString(date.toString)
+  }))
 }

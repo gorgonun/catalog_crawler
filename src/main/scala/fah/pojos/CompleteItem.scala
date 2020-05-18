@@ -1,16 +1,16 @@
 package fah.pojos
 
-import java.sql.Timestamp
+import java.time.LocalDate
 
 case class CompleteItem(id: String,
-                        categories: Array[String], // TODO: Remove category and replace with habitation + negotiator + contractType
-                        postDate: Timestamp,
+                        categories: List[String], // TODO: Remove category and replace with habitation + negotiator + contractType
+                        postDate: LocalDate,
                         title: String,
                         link: String,
-                        images: Array[String] = Array.empty,
+                        images: List[String] = List.empty,
                         description: Option[String] = None,
                         sellerName: Option[String] = None,
-                        expiration: Option[Timestamp] = None,
+                        expiration: Option[LocalDate] = None,
                         email: Option[String] = None,
                         price: Option[Int] = None,
                         street: Option[String] = None,

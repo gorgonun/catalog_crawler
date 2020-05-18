@@ -2,11 +2,11 @@ package fah.parsers
 
 import java.time.LocalDate
 
-import fah.pojos.{HabitationEnum, RawItem}
-import fah.utils.Utils.{decodeString, toB64Compressed}
+import fah.pojos.{CompleteItem, HabitationEnum, RawItem}
+import fah.utils.Utils.{LocalDateSerializer, decodeString, toB64Compressed}
 import org.json4s.jackson.Serialization.write
 import org.json4s.native.JsonMethods.parse
-import org.json4s.{DefaultFormats, JValue}
+import org.json4s.{DefaultFormats, Formats, JValue}
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.io.Source
@@ -60,11 +60,11 @@ class ItemParserSpec extends FunSpec with Matchers {
   }
 
   it("should convert rawitems to completeitems") {
-    implicit val formats: DefaultFormats.type = DefaultFormats
+    implicit val formats: Formats = DefaultFormats ++ List(LocalDateSerializer)
 
     val jsonRawItem = parseJsonFileFromB64EncodedResource("ItemParser/raw_item")
     val jsonParsed = parseJsonFileFromB64EncodedResource("ItemParser/parser_result")
 
-    write(ItemParser.parse(jsonRawItem.extract[RawItem])) shouldBe write(jsonParsed)
+    ItemParser.parse(jsonRawItem.extract[RawItem]) shouldBe jsonParsed.extract[CompleteItem]
   }
 }
