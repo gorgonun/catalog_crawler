@@ -13,7 +13,7 @@ object RawItemQueryParser {
       entity = rs.string("entity"),
       originalSource = rs.string("originalSource"),
       category = rs.stringOpt("category"),
-      images = rs.array("images").getArray.asInstanceOf[List[String]],
+      images = rs.array("images").getArray.asInstanceOf[Array[String]].toList,
       description = rs.stringOpt("description"),
       expirationDate = rs.stringOpt("expirationDate"),
       price = rs.stringOpt("price"),
@@ -42,5 +42,4 @@ object RawItemQueryParser {
       sellerEmail = rs.stringOpt("sellerEmail")
     )
   }
-
 }

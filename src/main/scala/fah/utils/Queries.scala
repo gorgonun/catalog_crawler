@@ -58,11 +58,11 @@ object Queries {
   val insert: CompleteItem => Table => SQL[Nothing, NoExtractor] = (i: CompleteItem) => (table: Table) => sql"""
              INSERT INTO ${table.name} VALUES (
               ${i.id},
-              ${i.categories},
+              ${i.categories.toArray},
               ${i.postDate},
               ${i.title},
               ${i.link},
-              ${i.images},
+              ${i.images.toArray},
               ${i.description},
               ${i.sellerName},
               ${i.expiration},
