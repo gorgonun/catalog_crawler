@@ -46,13 +46,6 @@ object Utils {
       .headOption
   }
 
-  def parseStringByRegex(str: String, regexMap: Map[String, String]): Option[String] = {
-    regexMap
-      .keys
-      .flatMap(_.r findFirstIn str)
-      .headOption
-  }
-
   def toB64Compressed(text: String): String = {
     val bos = new ByteArrayOutputStream()
     val gzs = new GZIPOutputStream(bos)

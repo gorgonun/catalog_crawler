@@ -2,7 +2,7 @@ package fah.parsers
 
 import java.time.LocalDate
 
-import fah.pojos.{CompleteItem, HabitationEnum, RawItem}
+import fah.pojos.{CompleteItem, HabitationEnum, NegotiatorEnum, ContractEnum, RawItem}
 import fah.utils.Utils.{LocalDateSerializer, decodeString, toB64Compressed}
 import org.json4s.jackson.Serialization.write
 import org.json4s.native.JsonMethods.parse
@@ -57,6 +57,29 @@ class ItemParserSpec extends FunSpec with Matchers {
 
     validDates.map(ItemParser.parseDate) shouldBe Seq(Success(LocalDate.of(2020, 1, 23)), Success(LocalDate.of(2020, 1, 22)), Success(LocalDate.of(2020, 1, 1)))
     ItemParser.parseDate(invalidDate).isFailure shouldBe true
+  }
+
+  it("gets the correct habitation type from text") {
+    val habTypes = Seq("casa", "casebre", "apt", "apto", "kitnet", "ponte")
+    val expected = Seq(HabitationEnum.Home, HabitationEnum.Home, HabitationEnum.Apartment, HabitationEnum.Apartment, HabitationEnum.Kitnet)
+    habTypes.flatMap(ItemParser.inferHabitationTypeFromRawNormalizedText) shouldBe expected
+  }
+
+  it("gets the correct negotiator type from text") {
+    val negotTypes = Seq("dono", "proprietario", "imobiliaria", "agiota")
+    val expected = Seq(NegotiatorEnum.Owner, NegotiatorEnum.Owner, NegotiatorEnum.RealState)
+    negotTypes.flatMap(ItemParser.inferNegotiatorTypeFromRawNormalizedText) shouldBe expected
+  }
+
+  it("gets the correct contract type from text") {
+    val contTypes = Seq("aluguel", "noturno")
+    val expected = Seq(ContractEnum.Rent)
+    contTypes.flatMap(ItemParser.inferContractTypeFromRawNormalizedText) shouldBe expected
+  }
+
+  it("gets the element with a custom function") {
+    val testStrs = Seq("some", "nop")
+    ItemParser.inferFromList(testStrs, s => Option(s)) shouldBe Some("some")
   }
 
   it("should convert rawitems to completeitems") {

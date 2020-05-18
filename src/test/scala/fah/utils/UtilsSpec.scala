@@ -22,4 +22,25 @@ class UtilsSpec extends FunSpec with Matchers {
     Utils.parseInt(Some("300")) shouldBe Some(300)
     Utils.parseInt(None) shouldBe None
   }
+
+  it("parses string by its primitive map") {
+    val primitives = Map(
+      "ca" -> "caca",
+      "ar" -> "arvore"
+    )
+    val values = Seq("cac", "arvi")
+    values.flatMap(Utils.parseStringByPrimitive(_, primitives)) shouldBe Seq("caca", "arvore")
+  }
+
+  it("compress text with b64 encoding") {
+    val texts = Seq("test", "bla bla!")
+    val expected = Seq("H4sIAAAAAAAAACtJLS4BAAx+f9gEAAAA", "H4sIAAAAAAAAAEvKSVRIyklUBACx6v5ZCAAAAA==")
+    texts.map(Utils.toB64Compressed) shouldBe expected
+  }
+
+  it("decompress b64 text") {
+    val texts = Seq("H4sIAAAAAAAAACtJLS4BAAx+f9gEAAAA", "H4sIAAAAAAAAAEvKSVRIyklUBACx6v5ZCAAAAA==")
+    val expected = Seq("test", "bla bla!")
+    texts.map(Utils.decodeString) shouldBe expected
+  }
 }

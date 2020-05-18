@@ -1,6 +1,5 @@
 package fah.parsers
 
-import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId, ZonedDateTime}
 
@@ -12,9 +11,7 @@ import scala.util.Try
 
 object ItemParser extends Common {
 
-  def parse(rawItems: LazyList[RawItem]): LazyList[CompleteItem] = {
-    rawItems.map(parse)
-  }
+  def parse(rawItems: LazyList[RawItem]): LazyList[CompleteItem] = rawItems.map(parse)
 
   def parse(rawItem: RawItem): CompleteItem = {
     val inferenceTargets = Seq(rawItem.category.getOrElse(""), normalize(rawItem.description.getOrElse("")))
@@ -81,7 +78,11 @@ object ItemParser extends Common {
   // TODO: Use Levenshtein distance algorithm with synonymous
 
   def inferHabitationTypeFromRawNormalizedText(normalizedRawText: String): Option[String] = {
-    val habitationTypes = Map("apart" -> HabitationEnum.Apartment, "cas" -> HabitationEnum.Home, "kit" -> HabitationEnum.Kitnet)
+    val habitationTypes = Map(
+      "apart" -> HabitationEnum.Apartment,
+      "apt" -> HabitationEnum.Apartment,
+      "cas" -> HabitationEnum.Home,
+      "kit" -> HabitationEnum.Kitnet)
     parseStringByPrimitive(normalizedRawText, habitationTypes)
   }
 
