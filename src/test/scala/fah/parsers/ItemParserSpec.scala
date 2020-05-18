@@ -2,9 +2,8 @@ package fah.parsers
 
 import java.time.LocalDate
 
-import fah.pojos.{CompleteItem, HabitationEnum, NegotiatorEnum, ContractEnum, RawItem}
-import fah.utils.Utils.{LocalDateSerializer, decodeString, toB64Compressed}
-import org.json4s.jackson.Serialization.write
+import fah.pojos._
+import fah.utils.Utils.{LocalDateSerializer, decodeString}
 import org.json4s.native.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats, JValue}
 import org.scalatest.{FunSpec, Matchers}

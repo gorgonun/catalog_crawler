@@ -29,7 +29,7 @@ object RawItemQueryParser {
       washingMachine = rs.stringOpt("washingMachine"),
       animalsAllowed = rs.stringOpt("animalsAllowed"),
       rentPrice = rs.stringOpt("rentPrice"),
-      IPTUPrice = rs.stringOpt("IPTUPrice"),
+      iptuPrice = rs.stringOpt("IPTUPrice"),
       managerFee = rs.stringOpt("managerFee"),
       stove = rs.stringOpt("stove"),
       fridge = rs.stringOpt("fridge"),

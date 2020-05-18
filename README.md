@@ -1,7 +1,2 @@
-# catalog_crawler
+# FAH
 Crawler of catalogs
-
-## Requirements
-- Docker
-- Scala
-- SBT

@@ -1,6 +1,7 @@
 package fah.datasource
 
 import java.net.URI
+
 import scalikejdbc._
 
 case class DbData(url: String, username: String, password: String)
